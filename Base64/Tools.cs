@@ -48,5 +48,20 @@ namespace Base64
             // Start the timer
             timer = new System.Threading.Timer(callback, null, interval, Timeout.Infinite);
         }
+        public static async Task WriteToFileAsync(string path, string text, bool append)
+        {
+            try
+            {
+                await using (StreamWriter sw = new StreamWriter(path, append))
+                {
+                    await sw.WriteLineAsync(text);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception, e.g. by logging the error or showing a message box to the user
+                Console.WriteLine($"Error writing to file {path}: {ex.Message}");
+            }
+        }
     }
 }

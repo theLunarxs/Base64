@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Base64
 {
@@ -10,7 +11,7 @@ namespace Base64
     {
         public static string ConvertToBase64(string input, bool ios)
         {
-            string[] raw = ios ? input.Split("\v") : new string[] { input };
+            string[] raw = ios ? input.Split('\v') : new string[] { input };
             string[] Final = new string[raw.Length];
 
             for (int i = 0; i < raw.Length; i++)
@@ -25,7 +26,7 @@ namespace Base64
 
             }
 
-            return string.Join("\r\n", Final); ;
+            return string.Join(Environment.NewLine, Final); ;
         }
 
         public static void MakeLabelGo(int interval, Label label)
@@ -48,20 +49,45 @@ namespace Base64
             // Start the timer
             timer = new System.Threading.Timer(callback, null, interval, Timeout.Infinite);
         }
-        public static async Task WriteToFileAsync(string path, string text, bool append)
+
+        public static async Task WriteToFileAsync(string path, string text, bool append, bool unique, bool useNumberAndLetter)
         {
             try
             {
-                await using (StreamWriter sw = new StreamWriter(path, append))
+                var name = Path.GetFileNameWithoutExtension(path);
+
+                if (unique)
                 {
-                    await sw.WriteLineAsync(text);
+                    var random = new Random();
+                    var chars = useNumberAndLetter ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" : "0123456789";
+                    var randomString = new string(
+                        Enumerable.Repeat(chars, 8)
+                        .Select(s => s[random.Next(s.Length)])
+                        .ToArray());
+                    name += randomString;
                 }
+
+                var extension = Path.GetExtension(path);
+                var directory = Path.GetDirectoryName(path);
+                var newFilePath = Path.Combine(directory, name + extension);
+
+
+                if (append)
+                {
+                    using (StreamReader reader = new(path))
+                    {
+                        text = await reader.ReadToEndAsync() + Environment.NewLine + text;
+                    }
+                }
+
+                await File.WriteAllTextAsync(newFilePath, text + Environment.NewLine);
+
             }
             catch (Exception ex)
             {
-                // Handle the exception, e.g. by logging the error or showing a message box to the user
-                Console.WriteLine($"Error writing to file {path}: {ex.Message}");
+                throw new IOException($"Error writing file text:{Environment.NewLine}{ex.Message}");
             }
         }
+
     }
 }

@@ -4,6 +4,7 @@ namespace Base64
 {
     public partial class Base64Converter : Form
     {
+        bool useNumberAndLetter;
         public Base64Converter()
         {
             InitializeComponent();
@@ -35,16 +36,6 @@ namespace Base64
 
         }
 
-        private void txtInput_TextChanged(object sender, EventArgs e)
-        {
-            txtResult.Text = string.Empty;
-        }
-
-        private void chckbxIOS_CheckedChanged(object sender, EventArgs e)
-        {
-            txtResult.Text = string.Empty;
-        }
-
         private void btnBrowse_Click(object sender, EventArgs e)
         {
             // Open a file selection dialog
@@ -55,7 +46,7 @@ namespace Base64
             }
             else
             {
-                lblSuccess.Text = "Error in File";
+                lblSuccess.Text = "Error in File!";
                 lblSuccess.ForeColor = Color.DarkRed;
                 lblSuccess.Visible = true;
                 Tools.MakeLabelGo(5000, lblSuccess);
@@ -90,7 +81,7 @@ namespace Base64
                     var result = Tools.ConvertToBase64(txtInput.Text, chckbxIOS.Checked);
                     txtResult.Text = result;
 
-                    _ = Tools.WriteToFileAsync(txtPath.Text, result, false);
+                    _ = Tools.WriteToFileAsync(txtPath.Text, result, false, chckUnique.Checked, useNumberAndLetter);
                 }
             }
 
@@ -109,7 +100,7 @@ namespace Base64
             {
                 if (txtPath.Text.Length == 0)
                 {
-                    lblSuccess.Text = "Path is Empty";
+                    lblSuccess.Text = "Path is Empty!";
                     lblSuccess.ForeColor = Color.DarkRed;
                     lblSuccess.Visible = true;
                     Tools.MakeLabelGo(3000, lblSuccess);
@@ -124,7 +115,7 @@ namespace Base64
                     var result = Tools.ConvertToBase64(txtInput.Text, chckbxIOS.Checked);
                     txtResult.Text = result;
 
-                    _ = Tools.WriteToFileAsync(txtPath.Text, result, true);
+                    _ = Tools.WriteToFileAsync(txtPath.Text, result, true, chckUnique.Checked, useNumberAndLetter);
                 }
             }
 
@@ -133,6 +124,42 @@ namespace Base64
         private void txtPath_TextChanged(object sender, EventArgs e)
         {
             txtResult.Text = string.Empty;
+        }
+
+        private void txtInput_TextChanged(object sender, EventArgs e)
+        {
+            txtResult.Text = string.Empty;
+        }
+
+        private void chckbxIOS_CheckedChanged(object sender, EventArgs e)
+        {
+            txtResult.Text = string.Empty;
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var x = comboBox1.SelectedIndex == 0 ? false : true;
+            useNumberAndLetter = x;
+        }
+
+        private void chckUnique_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chckUnique.Checked)
+            {
+                if (!string.IsNullOrEmpty(txtPath.Text))
+                {
+                    comboBox1.Visible = true;
+                }
+                else
+                {
+                    lblSuccess.Text = "Path is Empty!";
+                    lblSuccess.ForeColor = Color.DarkRed;
+                    lblSuccess.Visible = true;
+                    Tools.MakeLabelGo(3000, lblSuccess);
+                    chckUnique.Checked = false;
+                }
+            }
+
         }
     }
 }

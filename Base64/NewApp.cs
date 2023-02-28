@@ -15,6 +15,9 @@ namespace Base64
         public NewApp()
         {
             InitializeComponent();
+            this.lblDisclosure.Text = $"Please note that we won't be storing your server's Info (IP Address, Username, Password)" +
+                $"{Environment.NewLine}" + "as you can read in our code stored on github";
+
         }
     }
 }

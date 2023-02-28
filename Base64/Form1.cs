@@ -159,6 +159,10 @@ namespace Base64
                     chckUnique.Checked = false;
                 }
             }
+            else
+            {
+                comboBox1.Visible = false;
+            }
 
         }
     }

@@ -69,7 +69,7 @@ namespace Base64
 
                 var extension = Path.GetExtension(path);
                 var directory = Path.GetDirectoryName(path);
-                var newFilePath = Path.Combine(directory, name + extension);
+                var newFilePath = Path.Combine(directory!, name + extension);
 
 
                 if (append)
@@ -85,7 +85,7 @@ namespace Base64
             }
             catch (Exception ex)
             {
-                throw new IOException($"Error writing file text:{Environment.NewLine}{ex.Message}");
+                throw new IOException($"Error writing file text: {Environment.NewLine}{ex.Message}");
             }
         }
 

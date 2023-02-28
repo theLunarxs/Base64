@@ -135,6 +135,7 @@
             // 
             this.txtPath.Location = new System.Drawing.Point(475, 182);
             this.txtPath.Name = "txtPath";
+            this.txtPath.ReadOnly = true;
             this.txtPath.Size = new System.Drawing.Size(313, 23);
             this.txtPath.TabIndex = 10;
             this.txtPath.TextChanged += new System.EventHandler(this.txtPath_TextChanged);

@@ -39,7 +39,7 @@
             this.txtResPath = new System.Windows.Forms.TextBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.panel4 = new System.Windows.Forms.Panel();
+            this.panelIndividualize = new System.Windows.Forms.Panel();
             this.rdNumbers = new System.Windows.Forms.RadioButton();
             this.rdNumbersLetters = new System.Windows.Forms.RadioButton();
             this.label6 = new System.Windows.Forms.Label();
@@ -49,18 +49,19 @@
             this.chckUnique = new System.Windows.Forms.CheckBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.chckIPService = new System.Windows.Forms.CheckBox();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.panel6 = new System.Windows.Forms.Panel();
+            this.PanelParentIP = new System.Windows.Forms.Panel();
+            this.PanelIPDirectory = new System.Windows.Forms.Panel();
+            this.panelInputPath = new System.Windows.Forms.Panel();
+            this.txtFilePath = new System.Windows.Forms.TextBox();
+            this.btnInputFile = new System.Windows.Forms.Button();
             this.rdInputRaw = new System.Windows.Forms.RadioButton();
             this.rdInputFile = new System.Windows.Forms.RadioButton();
             this.txtIPInput = new System.Windows.Forms.RichTextBox();
-            this.txtFilePath = new System.Windows.Forms.TextBox();
-            this.btnInputFile = new System.Windows.Forms.Button();
-            this.panel5 = new System.Windows.Forms.Panel();
+            this.PanelIPSource = new System.Windows.Forms.Panel();
             this.label9 = new System.Windows.Forms.Label();
             this.rdStoredIP = new System.Windows.Forms.RadioButton();
             this.rdCustomIP = new System.Windows.Forms.RadioButton();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.PanelStoreOptions = new System.Windows.Forms.FlowLayoutPanel();
             this.rdStoreSeperate = new System.Windows.Forms.RadioButton();
             this.rdStoreSingleFile = new System.Windows.Forms.RadioButton();
             this.btnLegacy = new System.Windows.Forms.Button();
@@ -68,13 +69,16 @@
             this.label5 = new System.Windows.Forms.Label();
             this.lblDisclosure = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
+            this.chckCustomPathtoDb = new System.Windows.Forms.CheckBox();
+            this.txtCustomPathtoDb = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
-            this.panel4.SuspendLayout();
+            this.panelIndividualize.SuspendLayout();
             this.panel2.SuspendLayout();
-            this.panel3.SuspendLayout();
-            this.panel6.SuspendLayout();
-            this.panel5.SuspendLayout();
-            this.flowLayoutPanel1.SuspendLayout();
+            this.PanelParentIP.SuspendLayout();
+            this.PanelIPDirectory.SuspendLayout();
+            this.panelInputPath.SuspendLayout();
+            this.PanelIPSource.SuspendLayout();
+            this.PanelStoreOptions.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -127,7 +131,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(307, 520);
+            this.button1.Location = new System.Drawing.Point(307, 496);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(143, 45);
             this.button1.TabIndex = 6;
@@ -142,17 +146,19 @@
             this.btnResDirectory.TabIndex = 7;
             this.btnResDirectory.Text = "Result Directory";
             this.btnResDirectory.UseVisualStyleBackColor = true;
+            this.btnResDirectory.Click += new System.EventHandler(this.btnResDirectory_Click);
             // 
             // txtResPath
             // 
             this.txtResPath.Location = new System.Drawing.Point(435, 59);
             this.txtResPath.Name = "txtResPath";
-            this.txtResPath.Size = new System.Drawing.Size(339, 23);
+            this.txtResPath.ReadOnly = true;
+            this.txtResPath.Size = new System.Drawing.Size(353, 23);
             this.txtResPath.TabIndex = 8;
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.panel4);
+            this.panel1.Controls.Add(this.panelIndividualize);
             this.panel1.Controls.Add(this.label6);
             this.panel1.Controls.Add(this.txtCustomName);
             this.panel1.Controls.Add(this.chckCustomName);
@@ -163,14 +169,15 @@
             this.panel1.Size = new System.Drawing.Size(337, 283);
             this.panel1.TabIndex = 9;
             // 
-            // panel4
+            // panelIndividualize
             // 
-            this.panel4.Controls.Add(this.rdNumbers);
-            this.panel4.Controls.Add(this.rdNumbersLetters);
-            this.panel4.Location = new System.Drawing.Point(146, 132);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(179, 67);
-            this.panel4.TabIndex = 18;
+            this.panelIndividualize.Controls.Add(this.rdNumbers);
+            this.panelIndividualize.Controls.Add(this.rdNumbersLetters);
+            this.panelIndividualize.Location = new System.Drawing.Point(146, 122);
+            this.panelIndividualize.Name = "panelIndividualize";
+            this.panelIndividualize.Size = new System.Drawing.Size(179, 67);
+            this.panelIndividualize.TabIndex = 18;
+            this.panelIndividualize.Visible = false;
             // 
             // rdNumbers
             // 
@@ -182,7 +189,6 @@
             this.rdNumbers.TabStop = true;
             this.rdNumbers.Text = "Use Numbers";
             this.rdNumbers.UseVisualStyleBackColor = true;
-            this.rdNumbers.Visible = false;
             // 
             // rdNumbersLetters
             // 
@@ -194,7 +200,6 @@
             this.rdNumbersLetters.TabStop = true;
             this.rdNumbersLetters.Text = "Use Numbers and Letters";
             this.rdNumbersLetters.UseVisualStyleBackColor = true;
-            this.rdNumbersLetters.Visible = false;
             // 
             // label6
             // 
@@ -223,6 +228,7 @@
             this.chckCustomName.TabIndex = 0;
             this.chckCustomName.Text = "Customize Result File name";
             this.chckCustomName.UseVisualStyleBackColor = true;
+            this.chckCustomName.CheckedChanged += new System.EventHandler(this.chckCustomName_CheckedChanged);
             // 
             // chckIOS
             // 
@@ -243,11 +249,12 @@
             this.chckUnique.TabIndex = 12;
             this.chckUnique.Text = "Individualize Name";
             this.chckUnique.UseVisualStyleBackColor = true;
+            this.chckUnique.CheckedChanged += new System.EventHandler(this.chckUnique_CheckedChanged);
             // 
             // panel2
             // 
             this.panel2.Controls.Add(this.chckIPService);
-            this.panel2.Controls.Add(this.panel3);
+            this.panel2.Controls.Add(this.PanelParentIP);
             this.panel2.Location = new System.Drawing.Point(382, 207);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(406, 283);
@@ -262,41 +269,71 @@
             this.chckIPService.TabIndex = 1;
             this.chckIPService.Text = "Use IP Service";
             this.chckIPService.UseVisualStyleBackColor = true;
+            this.chckIPService.CheckedChanged += new System.EventHandler(this.chckIPService_CheckedChanged);
             // 
-            // panel3
+            // PanelParentIP
             // 
-            this.panel3.Controls.Add(this.panel6);
-            this.panel3.Controls.Add(this.panel5);
-            this.panel3.Controls.Add(this.flowLayoutPanel1);
-            this.panel3.Location = new System.Drawing.Point(3, 41);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(400, 239);
-            this.panel3.TabIndex = 0;
+            this.PanelParentIP.Controls.Add(this.PanelIPDirectory);
+            this.PanelParentIP.Controls.Add(this.PanelIPSource);
+            this.PanelParentIP.Controls.Add(this.PanelStoreOptions);
+            this.PanelParentIP.Location = new System.Drawing.Point(3, 41);
+            this.PanelParentIP.Name = "PanelParentIP";
+            this.PanelParentIP.Size = new System.Drawing.Size(400, 239);
+            this.PanelParentIP.TabIndex = 0;
             // 
-            // panel6
+            // PanelIPDirectory
             // 
-            this.panel6.Controls.Add(this.rdInputRaw);
-            this.panel6.Controls.Add(this.rdInputFile);
-            this.panel6.Controls.Add(this.txtIPInput);
-            this.panel6.Controls.Add(this.txtFilePath);
-            this.panel6.Controls.Add(this.btnInputFile);
-            this.panel6.Location = new System.Drawing.Point(6, 58);
-            this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(383, 117);
-            this.panel6.TabIndex = 25;
-            this.panel6.Visible = false;
+            this.PanelIPDirectory.Controls.Add(this.panelInputPath);
+            this.PanelIPDirectory.Controls.Add(this.rdInputRaw);
+            this.PanelIPDirectory.Controls.Add(this.rdInputFile);
+            this.PanelIPDirectory.Controls.Add(this.txtIPInput);
+            this.PanelIPDirectory.Location = new System.Drawing.Point(6, 58);
+            this.PanelIPDirectory.Name = "PanelIPDirectory";
+            this.PanelIPDirectory.Size = new System.Drawing.Size(383, 127);
+            this.PanelIPDirectory.TabIndex = 25;
+            this.PanelIPDirectory.Visible = false;
+            // 
+            // panelInputPath
+            // 
+            this.panelInputPath.Controls.Add(this.txtFilePath);
+            this.panelInputPath.Controls.Add(this.btnInputFile);
+            this.panelInputPath.Location = new System.Drawing.Point(6, 23);
+            this.panelInputPath.Name = "panelInputPath";
+            this.panelInputPath.Size = new System.Drawing.Size(371, 32);
+            this.panelInputPath.TabIndex = 19;
+            this.panelInputPath.Visible = false;
+            // 
+            // txtFilePath
+            // 
+            this.txtFilePath.Location = new System.Drawing.Point(87, 3);
+            this.txtFilePath.Name = "txtFilePath";
+            this.txtFilePath.ReadOnly = true;
+            this.txtFilePath.Size = new System.Drawing.Size(284, 23);
+            this.txtFilePath.TabIndex = 23;
+            this.txtFilePath.TextChanged += new System.EventHandler(this.txtFilePath_TextChanged);
+            // 
+            // btnInputFile
+            // 
+            this.btnInputFile.Location = new System.Drawing.Point(6, 3);
+            this.btnInputFile.Name = "btnInputFile";
+            this.btnInputFile.Size = new System.Drawing.Size(75, 23);
+            this.btnInputFile.TabIndex = 22;
+            this.btnInputFile.Text = "Browse";
+            this.btnInputFile.UseVisualStyleBackColor = true;
+            this.btnInputFile.Click += new System.EventHandler(this.btnInputFile_Click);
             // 
             // rdInputRaw
             // 
             this.rdInputRaw.AllowDrop = true;
             this.rdInputRaw.AutoSize = true;
-            this.rdInputRaw.Location = new System.Drawing.Point(6, 50);
+            this.rdInputRaw.Location = new System.Drawing.Point(6, 61);
             this.rdInputRaw.Name = "rdInputRaw";
             this.rdInputRaw.Size = new System.Drawing.Size(78, 19);
             this.rdInputRaw.TabIndex = 25;
             this.rdInputRaw.TabStop = true;
             this.rdInputRaw.Text = "Input Raw";
             this.rdInputRaw.UseVisualStyleBackColor = true;
+            this.rdInputRaw.CheckedChanged += new System.EventHandler(this.rdInputRaw_CheckedChanged);
             // 
             // rdInputFile
             // 
@@ -308,41 +345,28 @@
             this.rdInputFile.TabStop = true;
             this.rdInputFile.Text = "Input File";
             this.rdInputFile.UseVisualStyleBackColor = true;
+            this.rdInputFile.CheckedChanged += new System.EventHandler(this.rdInputFile_CheckedChanged);
             // 
             // txtIPInput
             // 
-            this.txtIPInput.Location = new System.Drawing.Point(3, 70);
+            this.txtIPInput.Location = new System.Drawing.Point(3, 81);
             this.txtIPInput.Name = "txtIPInput";
             this.txtIPInput.Size = new System.Drawing.Size(368, 41);
             this.txtIPInput.TabIndex = 21;
             this.txtIPInput.Text = "";
+            this.txtIPInput.Visible = false;
+            this.txtIPInput.TextChanged += new System.EventHandler(this.txtIPInput_TextChanged);
             // 
-            // txtFilePath
+            // PanelIPSource
             // 
-            this.txtFilePath.Location = new System.Drawing.Point(87, 23);
-            this.txtFilePath.Name = "txtFilePath";
-            this.txtFilePath.Size = new System.Drawing.Size(284, 23);
-            this.txtFilePath.TabIndex = 23;
-            // 
-            // btnInputFile
-            // 
-            this.btnInputFile.Location = new System.Drawing.Point(6, 23);
-            this.btnInputFile.Name = "btnInputFile";
-            this.btnInputFile.Size = new System.Drawing.Size(75, 23);
-            this.btnInputFile.TabIndex = 22;
-            this.btnInputFile.Text = "Browse";
-            this.btnInputFile.UseVisualStyleBackColor = true;
-            // 
-            // panel5
-            // 
-            this.panel5.Controls.Add(this.label9);
-            this.panel5.Controls.Add(this.rdStoredIP);
-            this.panel5.Controls.Add(this.rdCustomIP);
-            this.panel5.Location = new System.Drawing.Point(9, 14);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(380, 35);
-            this.panel5.TabIndex = 24;
-            this.panel5.Visible = false;
+            this.PanelIPSource.Controls.Add(this.label9);
+            this.PanelIPSource.Controls.Add(this.rdStoredIP);
+            this.PanelIPSource.Controls.Add(this.rdCustomIP);
+            this.PanelIPSource.Location = new System.Drawing.Point(9, 14);
+            this.PanelIPSource.Name = "PanelIPSource";
+            this.PanelIPSource.Size = new System.Drawing.Size(380, 35);
+            this.PanelIPSource.TabIndex = 24;
+            this.PanelIPSource.Visible = false;
             // 
             // label9
             // 
@@ -374,16 +398,17 @@
             this.rdCustomIP.TabStop = true;
             this.rdCustomIP.Text = "Custom IPs";
             this.rdCustomIP.UseVisualStyleBackColor = true;
+            this.rdCustomIP.CheckedChanged += new System.EventHandler(this.rdCustomIP_CheckedChanged);
             // 
-            // flowLayoutPanel1
+            // PanelStoreOptions
             // 
-            this.flowLayoutPanel1.Controls.Add(this.rdStoreSeperate);
-            this.flowLayoutPanel1.Controls.Add(this.rdStoreSingleFile);
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 181);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(386, 55);
-            this.flowLayoutPanel1.TabIndex = 18;
-            this.flowLayoutPanel1.Visible = false;
+            this.PanelStoreOptions.Controls.Add(this.rdStoreSeperate);
+            this.PanelStoreOptions.Controls.Add(this.rdStoreSingleFile);
+            this.PanelStoreOptions.Location = new System.Drawing.Point(3, 191);
+            this.PanelStoreOptions.Name = "PanelStoreOptions";
+            this.PanelStoreOptions.Size = new System.Drawing.Size(386, 45);
+            this.PanelStoreOptions.TabIndex = 18;
+            this.PanelStoreOptions.Visible = false;
             // 
             // rdStoreSeperate
             // 
@@ -439,7 +464,7 @@
             // lblDisclosure
             // 
             this.lblDisclosure.AutoSize = true;
-            this.lblDisclosure.Location = new System.Drawing.Point(290, 106);
+            this.lblDisclosure.Location = new System.Drawing.Point(290, 142);
             this.lblDisclosure.Name = "lblDisclosure";
             this.lblDisclosure.Size = new System.Drawing.Size(61, 15);
             this.lblDisclosure.TabIndex = 17;
@@ -455,18 +480,38 @@
             this.label8.TabIndex = 18;
             this.label8.Text = "Use This Button if you want the old version";
             // 
+            // chckCustomPathtoDb
+            // 
+            this.chckCustomPathtoDb.AutoSize = true;
+            this.chckCustomPathtoDb.Location = new System.Drawing.Point(307, 102);
+            this.chckCustomPathtoDb.Name = "chckCustomPathtoDb";
+            this.chckCustomPathtoDb.Size = new System.Drawing.Size(132, 19);
+            this.chckCustomPathtoDb.TabIndex = 19;
+            this.chckCustomPathtoDb.Text = "Custom Path to DB?";
+            this.chckCustomPathtoDb.UseVisualStyleBackColor = true;
+            this.chckCustomPathtoDb.CheckedChanged += new System.EventHandler(this.chckCustomPathtoDb_CheckedChanged);
+            // 
+            // txtCustomPathtoDb
+            // 
+            this.txtCustomPathtoDb.Location = new System.Drawing.Point(438, 100);
+            this.txtCustomPathtoDb.Name = "txtCustomPathtoDb";
+            this.txtCustomPathtoDb.Size = new System.Drawing.Size(350, 23);
+            this.txtCustomPathtoDb.TabIndex = 20;
+            this.txtCustomPathtoDb.Visible = false;
+            // 
             // NewApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 577);
+            this.Controls.Add(this.txtCustomPathtoDb);
+            this.Controls.Add(this.chckCustomPathtoDb);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.lblDisclosure);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.btnLegacy);
             this.Controls.Add(this.panel2);
-            this.Controls.Add(this.panel1);
             this.Controls.Add(this.txtResPath);
             this.Controls.Add(this.btnResDirectory);
             this.Controls.Add(this.button1);
@@ -476,22 +521,25 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Name = "NewApp";
             this.Text = "NewApp";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.panel4.ResumeLayout(false);
-            this.panel4.PerformLayout();
+            this.panelIndividualize.ResumeLayout(false);
+            this.panelIndividualize.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
-            this.panel3.ResumeLayout(false);
-            this.panel6.ResumeLayout(false);
-            this.panel6.PerformLayout();
-            this.panel5.ResumeLayout(false);
-            this.panel5.PerformLayout();
-            this.flowLayoutPanel1.ResumeLayout(false);
-            this.flowLayoutPanel1.PerformLayout();
+            this.PanelParentIP.ResumeLayout(false);
+            this.PanelIPDirectory.ResumeLayout(false);
+            this.PanelIPDirectory.PerformLayout();
+            this.panelInputPath.ResumeLayout(false);
+            this.panelInputPath.PerformLayout();
+            this.PanelIPSource.ResumeLayout(false);
+            this.PanelIPSource.PerformLayout();
+            this.PanelStoreOptions.ResumeLayout(false);
+            this.PanelStoreOptions.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -521,23 +569,26 @@
         private Label label6;
         private TextBox txtCustomName;
         private CheckBox chckCustomName;
-        private Panel panel4;
+        private Panel panelIndividualize;
         private CheckBox chckIPService;
-        private Panel panel3;
-        private Panel panel6;
+        private Panel PanelParentIP;
+        private Panel PanelIPDirectory;
         private RadioButton rdInputRaw;
         private RadioButton rdInputFile;
         private RichTextBox txtIPInput;
         private TextBox txtFilePath;
         private Button btnInputFile;
-        private Panel panel5;
+        private Panel PanelIPSource;
         private Label label9;
         private RadioButton rdStoredIP;
         private RadioButton rdCustomIP;
-        private FlowLayoutPanel flowLayoutPanel1;
+        private FlowLayoutPanel PanelStoreOptions;
         private RadioButton rdStoreSeperate;
         private RadioButton rdStoreSingleFile;
         private Label lblDisclosure;
         private Label label8;
+        private Panel panelInputPath;
+        private CheckBox chckCustomPathtoDb;
+        private TextBox txtCustomPathtoDb;
     }
 }

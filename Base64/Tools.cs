@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Renci.SshNet;
 
 namespace Base64
 {
@@ -88,6 +89,44 @@ namespace Base64
                 throw new IOException($"Error writing file text: {Environment.NewLine}{ex.Message}");
             }
         }
+        public static async Task<bool> FetchDBFromServer(string IP, string Username, string Password)
+        {
+            ConnectionInfo conInfo = new(IP, Username, new PasswordAuthenticationMethod(Username, Password));
 
+            using (SshClient sshClient = new(conInfo))
+            {
+                try
+                {
+                    // Connecting to Server and Fetching DB
+                    sshClient.Connect();
+
+                    // Using SFTPClient to Download DB to Path
+                    using (var sftpClient = new SftpClient(sshClient.ConnectionInfo))
+                    {
+                        sftpClient.Connect();
+
+                        // Download file from remote server
+                        using (var fileStream = File.Create(@"C:\temp\users.db"))
+                        {
+                            sftpClient.DownloadFile("/opt/freedom/x-ui/db/x-ui.db", fileStream);
+                        }
+
+                        sftpClient.Disconnect();
+                    }
+
+                    sshClient.Disconnect();
+
+                    return await Task.FromResult(true);
+                }
+                catch
+                {
+                    return await Task.FromResult(false);
+                }
+            }
+        }
+        public static async Task<List<string>> DBtoList(string path)
+        {
+            
+        }
     }
 }

@@ -34,7 +34,7 @@
             this.txtIPAddress = new System.Windows.Forms.TextBox();
             this.txtUsername = new System.Windows.Forms.TextBox();
             this.txtPassword = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnConnect = new System.Windows.Forms.Button();
             this.btnResDirectory = new System.Windows.Forms.Button();
             this.txtResPath = new System.Windows.Forms.TextBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
@@ -71,6 +71,8 @@
             this.label8 = new System.Windows.Forms.Label();
             this.chckCustomPathtoDb = new System.Windows.Forms.CheckBox();
             this.txtCustomPathtoDb = new System.Windows.Forms.TextBox();
+            this.txtPort = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panelIndividualize.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -84,7 +86,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 68);
+            this.label1.Location = new System.Drawing.Point(12, 56);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(97, 15);
             this.label1.TabIndex = 0;
@@ -93,7 +95,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 106);
+            this.label2.Location = new System.Drawing.Point(12, 116);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(60, 15);
             this.label2.TabIndex = 1;
@@ -110,14 +112,14 @@
             // 
             // txtIPAddress
             // 
-            this.txtIPAddress.Location = new System.Drawing.Point(115, 60);
+            this.txtIPAddress.Location = new System.Drawing.Point(115, 48);
             this.txtIPAddress.Name = "txtIPAddress";
             this.txtIPAddress.Size = new System.Drawing.Size(168, 23);
             this.txtIPAddress.TabIndex = 3;
             // 
             // txtUsername
             // 
-            this.txtUsername.Location = new System.Drawing.Point(115, 103);
+            this.txtUsername.Location = new System.Drawing.Point(115, 113);
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(168, 23);
             this.txtUsername.TabIndex = 4;
@@ -126,17 +128,19 @@
             // 
             this.txtPassword.Location = new System.Drawing.Point(115, 142);
             this.txtPassword.Name = "txtPassword";
+            this.txtPassword.PasswordChar = '*';
             this.txtPassword.Size = new System.Drawing.Size(168, 23);
             this.txtPassword.TabIndex = 5;
             // 
-            // button1
+            // btnConnect
             // 
-            this.button1.Location = new System.Drawing.Point(307, 496);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(143, 45);
-            this.button1.TabIndex = 6;
-            this.button1.Text = "Connect and Fetch DB";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btnConnect.Location = new System.Drawing.Point(307, 496);
+            this.btnConnect.Name = "btnConnect";
+            this.btnConnect.Size = new System.Drawing.Size(143, 45);
+            this.btnConnect.TabIndex = 6;
+            this.btnConnect.Text = "Connect and Fetch DB";
+            this.btnConnect.UseVisualStyleBackColor = true;
+            this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
             // 
             // btnResDirectory
             // 
@@ -499,11 +503,29 @@
             this.txtCustomPathtoDb.TabIndex = 20;
             this.txtCustomPathtoDb.Visible = false;
             // 
+            // txtPort
+            // 
+            this.txtPort.Location = new System.Drawing.Point(115, 77);
+            this.txtPort.Name = "txtPort";
+            this.txtPort.Size = new System.Drawing.Size(56, 23);
+            this.txtPort.TabIndex = 22;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(12, 85);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(29, 15);
+            this.label7.TabIndex = 21;
+            this.label7.Text = "Port";
+            // 
             // NewApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 577);
+            this.Controls.Add(this.txtPort);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.txtCustomPathtoDb);
             this.Controls.Add(this.chckCustomPathtoDb);
             this.Controls.Add(this.label8);
@@ -514,7 +536,7 @@
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.txtResPath);
             this.Controls.Add(this.btnResDirectory);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnConnect);
             this.Controls.Add(this.txtPassword);
             this.Controls.Add(this.txtUsername);
             this.Controls.Add(this.txtIPAddress);
@@ -553,7 +575,7 @@
         private TextBox txtIPAddress;
         private TextBox txtUsername;
         private TextBox txtPassword;
-        private Button button1;
+        private Button btnConnect;
         private Button btnResDirectory;
         private TextBox txtResPath;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
@@ -590,5 +612,7 @@
         private Panel panelInputPath;
         private CheckBox chckCustomPathtoDb;
         private TextBox txtCustomPathtoDb;
+        private TextBox txtPort;
+        private Label label7;
     }
 }

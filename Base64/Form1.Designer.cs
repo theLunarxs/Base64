@@ -42,6 +42,18 @@
             this.btnAppend = new System.Windows.Forms.Button();
             this.chckUnique = new System.Windows.Forms.CheckBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.rdCreateFile = new System.Windows.Forms.RadioButton();
+            this.rdSelectFile = new System.Windows.Forms.RadioButton();
+            this.btnCreateFile = new System.Windows.Forms.Button();
+            this.panelButtons = new System.Windows.Forms.Panel();
+            this.btnShowInFolder = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtBaseName = new System.Windows.Forms.TextBox();
+            this.panelNewFile = new System.Windows.Forms.Panel();
+            this.panel1.SuspendLayout();
+            this.panelButtons.SuspendLayout();
+            this.panelNewFile.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblEnterVPN
@@ -123,7 +135,7 @@
             // 
             // btnBrowse
             // 
-            this.btnBrowse.Location = new System.Drawing.Point(394, 182);
+            this.btnBrowse.Location = new System.Drawing.Point(447, 188);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(75, 23);
             this.btnBrowse.TabIndex = 9;
@@ -133,16 +145,16 @@
             // 
             // txtPath
             // 
-            this.txtPath.Location = new System.Drawing.Point(475, 182);
+            this.txtPath.Location = new System.Drawing.Point(528, 189);
             this.txtPath.Name = "txtPath";
             this.txtPath.ReadOnly = true;
-            this.txtPath.Size = new System.Drawing.Size(313, 23);
+            this.txtPath.Size = new System.Drawing.Size(247, 23);
             this.txtPath.TabIndex = 10;
             this.txtPath.TextChanged += new System.EventHandler(this.txtPath_TextChanged);
             // 
             // btnOverWrite
             // 
-            this.btnOverWrite.Location = new System.Drawing.Point(431, 287);
+            this.btnOverWrite.Location = new System.Drawing.Point(3, 0);
             this.btnOverWrite.Name = "btnOverWrite";
             this.btnOverWrite.Size = new System.Drawing.Size(168, 32);
             this.btnOverWrite.TabIndex = 11;
@@ -152,13 +164,13 @@
             // 
             // btnAppend
             // 
-            this.btnAppend.Location = new System.Drawing.Point(605, 287);
+            this.btnAppend.Location = new System.Drawing.Point(171, 0);
             this.btnAppend.Name = "btnAppend";
             this.btnAppend.Size = new System.Drawing.Size(183, 32);
             this.btnAppend.TabIndex = 12;
             this.btnAppend.Text = "Convert and Append to File";
             this.btnAppend.UseVisualStyleBackColor = true;
-            this.btnAppend.Click += new System.EventHandler(this.btnAppend_Click);
+            this.btnAppend.Click += new System.EventHandler(this.btnAppend_ClickAsync);
             // 
             // chckUnique
             // 
@@ -185,17 +197,110 @@
             this.comboBox1.Visible = false;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.rdCreateFile);
+            this.panel1.Controls.Add(this.rdSelectFile);
+            this.panel1.Location = new System.Drawing.Point(330, 185);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(114, 71);
+            this.panel1.TabIndex = 15;
+            // 
+            // rdCreateFile
+            // 
+            this.rdCreateFile.AutoSize = true;
+            this.rdCreateFile.Location = new System.Drawing.Point(3, 49);
+            this.rdCreateFile.Name = "rdCreateFile";
+            this.rdCreateFile.Size = new System.Drawing.Size(107, 19);
+            this.rdCreateFile.TabIndex = 1;
+            this.rdCreateFile.TabStop = true;
+            this.rdCreateFile.Text = "Create New File";
+            this.rdCreateFile.UseVisualStyleBackColor = true;
+            this.rdCreateFile.CheckedChanged += new System.EventHandler(this.rdCreateFile_CheckedChanged);
+            // 
+            // rdSelectFile
+            // 
+            this.rdSelectFile.AutoSize = true;
+            this.rdSelectFile.Location = new System.Drawing.Point(3, 3);
+            this.rdSelectFile.Name = "rdSelectFile";
+            this.rdSelectFile.Size = new System.Drawing.Size(101, 19);
+            this.rdSelectFile.TabIndex = 0;
+            this.rdSelectFile.TabStop = true;
+            this.rdSelectFile.Text = "Select Text File";
+            this.rdSelectFile.UseVisualStyleBackColor = true;
+            this.rdSelectFile.CheckedChanged += new System.EventHandler(this.rdSelectFile_CheckedChanged);
+            // 
+            // btnCreateFile
+            // 
+            this.btnCreateFile.Location = new System.Drawing.Point(81, 30);
+            this.btnCreateFile.Name = "btnCreateFile";
+            this.btnCreateFile.Size = new System.Drawing.Size(247, 34);
+            this.btnCreateFile.TabIndex = 19;
+            this.btnCreateFile.Text = "Convert And Create New File";
+            this.btnCreateFile.UseVisualStyleBackColor = true;
+            this.btnCreateFile.Click += new System.EventHandler(this.btnCreateFile_Click);
+            // 
+            // panelButtons
+            // 
+            this.panelButtons.Controls.Add(this.btnOverWrite);
+            this.panelButtons.Controls.Add(this.btnAppend);
+            this.panelButtons.Location = new System.Drawing.Point(431, 287);
+            this.panelButtons.Name = "panelButtons";
+            this.panelButtons.Size = new System.Drawing.Size(357, 32);
+            this.panelButtons.TabIndex = 20;
+            this.panelButtons.Visible = false;
+            // 
+            // btnShowInFolder
+            // 
+            this.btnShowInFolder.Location = new System.Drawing.Point(126, 491);
+            this.btnShowInFolder.Name = "btnShowInFolder";
+            this.btnShowInFolder.Size = new System.Drawing.Size(141, 29);
+            this.btnShowInFolder.TabIndex = 21;
+            this.btnShowInFolder.Text = "Show in Folder";
+            this.btnShowInFolder.UseVisualStyleBackColor = true;
+            this.btnShowInFolder.Visible = false;
+            this.btnShowInFolder.Click += new System.EventHandler(this.btnShowInFolder_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 6);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(45, 15);
+            this.label2.TabIndex = 22;
+            this.label2.Text = "Name :";
+            // 
+            // txtBaseName
+            // 
+            this.txtBaseName.Location = new System.Drawing.Point(81, 3);
+            this.txtBaseName.Name = "txtBaseName";
+            this.txtBaseName.Size = new System.Drawing.Size(247, 23);
+            this.txtBaseName.TabIndex = 23;
+            // 
+            // panelNewFile
+            // 
+            this.panelNewFile.Controls.Add(this.txtBaseName);
+            this.panelNewFile.Controls.Add(this.btnCreateFile);
+            this.panelNewFile.Controls.Add(this.label2);
+            this.panelNewFile.Location = new System.Drawing.Point(447, 217);
+            this.panelNewFile.Name = "panelNewFile";
+            this.panelNewFile.Size = new System.Drawing.Size(341, 70);
+            this.panelNewFile.TabIndex = 24;
+            this.panelNewFile.Visible = false;
+            // 
             // Base64Converter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 512);
+            this.ClientSize = new System.Drawing.Size(804, 532);
+            this.Controls.Add(this.panelNewFile);
+            this.Controls.Add(this.btnShowInFolder);
+            this.Controls.Add(this.panelButtons);
+            this.Controls.Add(this.btnBrowse);
+            this.Controls.Add(this.txtPath);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.chckUnique);
-            this.Controls.Add(this.btnAppend);
-            this.Controls.Add(this.btnOverWrite);
-            this.Controls.Add(this.txtPath);
-            this.Controls.Add(this.btnBrowse);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lblSuccess);
             this.Controls.Add(this.txtResult);
@@ -210,6 +315,11 @@
             this.Name = "Base64Converter";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Base64Converter";
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            this.panelButtons.ResumeLayout(false);
+            this.panelNewFile.ResumeLayout(false);
+            this.panelNewFile.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -231,5 +341,14 @@
         private Button btnAppend;
         private CheckBox chckUnique;
         private ComboBox comboBox1;
+        private Panel panel1;
+        private RadioButton rdCreateFile;
+        private RadioButton rdSelectFile;
+        private Button btnCreateFile;
+        private Panel panelButtons;
+        private Button btnShowInFolder;
+        private Label label2;
+        private TextBox txtBaseName;
+        private Panel panelNewFile;
     }
 }

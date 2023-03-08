@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace Base64
@@ -5,10 +6,13 @@ namespace Base64
     public partial class Base64Converter : Form
     {
         bool useNumberAndLetter;
+        string resultFile = string.Empty;
         public Base64Converter()
         {
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.SizableToolWindow;
+
+            btnBrowse.Enabled = false;
 
         }
 
@@ -39,21 +43,43 @@ namespace Base64
         private void btnBrowse_Click(object sender, EventArgs e)
         {
             // Open a file selection dialog
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+
+            if (rdCreateFile.Checked)
             {
-                txtPath.Text = openFileDialog.FileName;
+                FolderBrowserDialog dialog = new();
+
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    txtPath.Text = dialog.SelectedPath;
+                }
+                else
+                {
+                    lblSuccess.Text = "Error in Path!";
+                    lblSuccess.ForeColor = Color.DarkRed;
+                    lblSuccess.Visible = true;
+                    Tools.MakeLabelGo(5000, lblSuccess);
+                }
             }
-            else
+            if (rdSelectFile.Checked)
             {
-                lblSuccess.Text = "Error in File!";
-                lblSuccess.ForeColor = Color.DarkRed;
-                lblSuccess.Visible = true;
-                Tools.MakeLabelGo(5000, lblSuccess);
+                OpenFileDialog openFileDialog = new();
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    txtPath.Text = openFileDialog.FileName;
+                }
+                else
+                {
+                    lblSuccess.Text = "Error in File!";
+                    lblSuccess.ForeColor = Color.DarkRed;
+                    lblSuccess.Visible = true;
+                    Tools.MakeLabelGo(5000, lblSuccess);
+                }
             }
+
+
         }
 
-        private void btnOverWrite_Click(object sender, EventArgs e)
+        private async void btnOverWrite_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(txtInput.Text))
             {
@@ -81,13 +107,15 @@ namespace Base64
                     var result = Tools.ConvertToBase64(txtInput.Text, chckbxIOS.Checked);
                     txtResult.Text = result;
 
-                    _ = Tools.WriteToFileAsync(txtPath.Text, result, false, chckUnique.Checked, useNumberAndLetter);
+                    resultFile = await Tools.WriteToFileAsync(txtPath.Text, result, false, chckUnique.Checked, useNumberAndLetter);
+                    btnShowInFolder.Visible = true;
+
                 }
             }
 
         }
 
-        private void btnAppend_Click(object sender, EventArgs e)
+        private async void btnAppend_ClickAsync(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(txtInput.Text))
             {
@@ -115,7 +143,8 @@ namespace Base64
                     var result = Tools.ConvertToBase64(txtInput.Text, chckbxIOS.Checked);
                     txtResult.Text = result;
 
-                    _ = Tools.WriteToFileAsync(txtPath.Text, result, true, chckUnique.Checked, useNumberAndLetter);
+                    resultFile = await Tools.WriteToFileAsync(txtPath.Text, result, true, chckUnique.Checked, useNumberAndLetter);
+                    btnShowInFolder.Visible = true;
                 }
             }
 
@@ -163,7 +192,64 @@ namespace Base64
             {
                 comboBox1.Visible = false;
             }
+        }
 
+        private void rdSelectFile_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rdSelectFile.Checked)
+            {
+                panelButtons.Visible = rdSelectFile.Checked;
+                btnBrowse.Enabled = rdSelectFile.Checked || rdCreateFile.Checked;
+                txtPath.Text = string.Empty;
+                txtBaseName.Text = string.Empty;
+            }
+        }
+
+        private void rdCreateFile_CheckedChanged(object sender, EventArgs e)
+        {
+            panelNewFile.Visible = rdCreateFile.Checked;
+            btnBrowse.Enabled = rdSelectFile.Checked || rdCreateFile.Checked;
+            txtPath.Text = string.Empty;
+        }
+
+        private async void btnCreateFile_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtInput.Text))
+            {
+                lblSuccess.Text = "Please Enter Something as Input!";
+                lblSuccess.ForeColor = Color.DarkRed;
+                lblSuccess.Visible = true;
+                Tools.MakeLabelGo(3000, lblSuccess);
+            }
+            else
+            {
+                if (txtPath.Text.Length == 0)
+                {
+                    lblSuccess.Text = "Path is Empty";
+                    lblSuccess.ForeColor = Color.DarkRed;
+                    lblSuccess.Visible = true;
+                    Tools.MakeLabelGo(3000, lblSuccess);
+                }
+                else
+                {
+                    txtResult.Text = string.Empty;
+                    lblSuccess.Text = "Success!";
+                    lblSuccess.ForeColor = Color.SeaGreen;
+                    lblSuccess.Visible = true;
+                    Tools.MakeLabelGo(5000, lblSuccess);
+                    var result = Tools.ConvertToBase64(txtInput.Text, chckbxIOS.Checked);
+                    txtResult.Text = result;
+
+                    resultFile = await Tools.WriteToFileAsync(txtPath.Text, result, txtBaseName.Text, chckUnique.Checked, useNumberAndLetter);
+                    btnShowInFolder.Visible = true;
+                }
+            }
+        }
+
+        private void btnShowInFolder_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(resultFile))
+                Process.Start("explorer.exe", $"/select,\"{resultFile}\"");
         }
     }
 }

@@ -69,21 +69,19 @@ namespace Base64
             }
         }
 
-        private void btnConnect_Click(object sender, EventArgs e)
+        private async void btnConnect_Click(object sender, EventArgs e)
         {
             //Tools.Server Clientserver = new Tools.Server() {IP = txtIPAddress.Text,Port=txtPort.Text, 
             //    Username = txtUsername.Text, Password= txtPassword.Text, keyPath= @"P:\sshkey"};
 
-            Tools.Server Clientserver = new()
-            {
-                IP = "91.107.254.163",
-                Port = "33",
-                Username = "root",
-                Password = "aryanx567",
-                keyPath = @"P:\sshkey"
+            Tools.Server Clientserver = new() {
+                IP = txtIPAddress.Text,
+                Port = txtPort.Text,
+                Username= txtUsername.Text,
+                Password= txtPassword.Text,
             };
-
-            MessageBox.Show(Tools.FetchDBFromServer(Clientserver).Result);
+           
+            MessageBox.Show(await Tools.FetchDBFromServer(Clientserver));
         }
     }
 }

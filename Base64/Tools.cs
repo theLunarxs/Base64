@@ -134,15 +134,8 @@ namespace Base64
 
         public static async Task<string> FetchDBFromServer(Server Server)
         {
-            if (!File.Exists(@Server.keyPath + @"privatekey.txt"))
-            {
-                await GenerateSSHKey(Server, Server.keyPath);
-            }
-
-            PrivateKeyFile privatekey = new(@Server.keyPath + "privatekey.txt");
-
             var connectionInfo = new ConnectionInfo(Server.IP, int.Parse(Server.Port), Server.Username,
-                new PrivateKeyAuthenticationMethod(Server.Username, privatekey));
+                new PasswordAuthenticationMethod(Server.Username, Server.Password));
 
             using (var sftpClient = new SftpClient(connectionInfo))
             {
@@ -152,11 +145,11 @@ namespace Base64
                     Debug.WriteLine("SFTP Connected");
 
                     // Download file from remote server
-                    using (var fileStream = File.Create(@"C:\temp\test.txt"))
+                    using (var fileStream = File.Create(@"P:\sshkey\test.db"))
                     {
                         try
                         {
-                            sftpClient.DownloadFile("/home/test.txt", fileStream);
+                            sftpClient.DownloadFile("/opt/freedom/x-ui/db/x-ui.db", fileStream);
                             Debug.WriteLine("File downloaded");
                         }
                         catch
@@ -176,52 +169,6 @@ namespace Base64
             Debug.WriteLine("Disconnected");
 
             return await Task.FromResult("Success");
-        }
-
-        public static async Task<bool> GenerateSSHKey(Server server, string keyPath)
-        {
-
-            if (!Directory.Exists(keyPath))
-                Directory.CreateDirectory(keyPath);
-
-            try
-            {
-                var keygen = new SshKeyGenerator.SshKeyGenerator(4096);
-
-                var privateKey = keygen.ToPrivateKey();
-                var publicSshKey = keygen.ToPublicKey();
-
-                await File.WriteAllTextAsync(@keyPath + @"privatekey.txt", privateKey);
-                await File.WriteAllTextAsync(@keyPath + @"publickey.txt", publicSshKey);
-
-                UploadPublicKeyToServer(server, @keyPath + @"publickey.txt");
-
-                return true;
-
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-                return false;
-            }
-        }
-        public static void UploadPublicKeyToServer(Server Server, string PublicKeyPath)
-        {
-            ConnectionInfo conn = new(Server.IP, int.Parse(Server.Port), Server.Username,
-                new PasswordAuthenticationMethod(Server.Username, Server.Password));
-
-            using (var client = new ScpClient(conn))
-            {
-                client.Connect();
-
-                using (var fileStream = new FileStream(PublicKeyPath, FileMode.Open))
-                {
-                    client.Upload(fileStream, "/home/uploadedkey.pub");
-                }
-
-                client.Disconnect();
-            }
-
         }
     }
 }

@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 using Base64.Utility.Models;
 using Base64.Utility;
 using Newtonsoft.Json;
-using static Base64.Utility.Models.Stream.WsStreamSetting;
+using Microsoft.VisualBasic.ApplicationServices;
 
 namespace Base64.Utility
 {
@@ -194,7 +194,15 @@ namespace Base64.Utility
             string host = jObject["wsSettings"]!["headers"]!["Host"]!.Value<string>()!;
             return host;
         }
+        public static string GetSNI(InboundModel inbound)
+        {
+            string json = inbound.StreamSettings;
+            var jObject = JObject.Parse(json);
 
+            // Access the "serverName" value inside the "tlsSettings" object
+            string sni = jObject["tlsSettings"]!["serverName"]!.Value<string>()!;
+            return sni;
+        }
         public static List<List<InboundModel>> PermutateIPS(List<InboundModel> inbounds, List<string> IPs)
         {
             /*
@@ -236,6 +244,25 @@ Finally, the function returns the list of all combinations.
             return resInbounds;
         }
 
-
+        public static string VmessEncoder(InboundModel inbound)
+        {
+            var VmessLink = System.Text.Json.JsonSerializer.Serialize(new VmessBase64Model
+            {
+                v = "2",
+                ps = inbound.Remark,
+                add = GetIPAddress(inbound),
+                port = inbound.Port,
+                id = inbound.Id.ToString(),
+                aid = 0,
+                scy = "auto",
+                net = "ws",
+                type = "none",
+                path = $"/wss{inbound.Port}",
+                tls = "tls",
+                sni = GetSNI(inbound),
+                alpn = ""
+            });
+            return ConvertToBase64(VmessLink, false);
+        }
     }
 }

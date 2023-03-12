@@ -3,15 +3,13 @@ using Base64.Utility;
 
 namespace Base64
 {
-    public partial class Base64Converter : Form
+    public partial class LegacyForm : Form
     {
         bool useNumberAndLetter;
         string resultFile = string.Empty;
-        public Base64Converter()
+        public LegacyForm()
         {
             InitializeComponent();
-            this.FormBorderStyle = FormBorderStyle.SizableToolWindow;
-
             btnBrowse.Enabled = false;
 
         }

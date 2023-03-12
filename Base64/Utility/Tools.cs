@@ -1,8 +1,11 @@
 ﻿using Renci.SshNet;
 using System.Diagnostics;
 using System.Text;
-using System.Text.Json;
 using Newtonsoft.Json.Linq;
+using Base64.Utility.Models;
+using Base64.Utility;
+using Newtonsoft.Json;
+using static Base64.Utility.Models.Stream.WsStreamSetting;
 
 namespace Base64.Utility
 {
@@ -140,7 +143,7 @@ namespace Base64.Utility
                     Debug.WriteLine("SFTP Connected");
 
                     // Download file from remote server
-                    using (var fileStream = File.Create(@"P:\sshkey\test.db"))
+                    using (var fileStream = File.Create(@"P:\sshkey\test1.db"))
                     {
                         try
                         {
@@ -166,7 +169,7 @@ namespace Base64.Utility
             return await Task.FromResult("Success");
         }
 
-        public static List<Inbound> GetInbounds()
+        public static List<InboundModel> GetInbounds()
         {
             using (var context = new ConfigsContext())
             {
@@ -182,7 +185,7 @@ namespace Base64.Utility
 
 
         // IP Section \\
-        public static string GetIPAddress(Inbound inbound)
+        public static string GetIPAddress(InboundModel inbound)
         {
             string json = inbound.StreamSettings;
             var jObject = JObject.Parse(json);
@@ -191,23 +194,24 @@ namespace Base64.Utility
             string host = jObject["wsSettings"]!["headers"]!["Host"]!.Value<string>()!;
             return host;
         }
-        /*
-        This function takes in a list of inbound objects and a list of IP addresses.
-        It then generates all the possible combinations of the inbound objects with the given IP addresses.
-        The function uses LINQ to generate the combinations by iterating over the inbound objects and for each object,
-        it creates new inbound objects by replacing the IP address in the StreamSettings field with each IP address in the given list.
-        The new inbound objects are then added to a list of lists, where each inner list represents a combination of the inbound objects with a particular IP address.
-        Finally, the function returns the list of all combinations.
-        */
-        public static List<List<Inbound>> PermutateIPS(List<Inbound> inbounds, List<string> IPs)
+
+        public static List<List<InboundModel>> PermutateIPS(List<InboundModel> inbounds, List<string> IPs)
         {
-            var resInbounds = new List<List<Inbound>>();
+            /*
+This function takes in a list of inbound objects and a list of IP addresses.
+It then generates all the possible combinations of the inbound objects with the given IP addresses.
+The function uses LINQ to generate the combinations by iterating over the inbound objects and for each object,
+it creates new inbound objects by replacing the IP address in the StreamSettings field with each IP address in the given list.
+The new inbound objects are then added to a list of lists, where each inner list represents a combination of the inbound objects with a particular IP address.
+Finally, the function returns the list of all combinations.
+*/
+            var resInbounds = new List<List<InboundModel>>();
 
             foreach (var inbound in inbounds)
             {
                 var newInbounds = IPs.Select(ip =>
                 {
-                    var newInbound = new Inbound
+                    var newInbound = new InboundModel
                     {
                         Id = inbound.Id,
                         UserId = inbound.UserId,
@@ -229,8 +233,9 @@ namespace Base64.Utility
                 }).ToList();
                 resInbounds.Add(newInbounds);
             }
-
             return resInbounds;
         }
+
+
     }
 }

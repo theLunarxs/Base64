@@ -1,6 +1,6 @@
 ﻿namespace Base64
 {
-    partial class Base64Converter
+    partial class LegacyForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -288,7 +288,7 @@
             this.panelNewFile.TabIndex = 24;
             this.panelNewFile.Visible = false;
             // 
-            // Base64Converter
+            // LegacyForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -309,12 +309,11 @@
             this.Controls.Add(this.btnConvert);
             this.Controls.Add(this.txtInput);
             this.Controls.Add(this.lblEnterVPN);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "Base64Converter";
+            this.Name = "LegacyForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Base64Converter";
+            this.Text = "LegacyApp";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panelButtons.ResumeLayout(false);

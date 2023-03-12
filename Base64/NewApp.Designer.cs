@@ -134,7 +134,7 @@
             // 
             // btnConnect
             // 
-            this.btnConnect.Location = new System.Drawing.Point(307, 496);
+            this.btnConnect.Location = new System.Drawing.Point(307, 507);
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(143, 45);
             this.btnConnect.TabIndex = 6;
@@ -444,6 +444,7 @@
             this.btnLegacy.TabIndex = 13;
             this.btnLegacy.Text = "Use Legacy";
             this.btnLegacy.UseVisualStyleBackColor = true;
+            this.btnLegacy.Click += new System.EventHandler(this.btnLegacy_Click);
             // 
             // label4
             // 
@@ -544,7 +545,8 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.panel1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
             this.Name = "NewApp";
             this.Text = "NewApp";
             this.panel1.ResumeLayout(false);

@@ -5,38 +5,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Base64.Utility.Models;
 
 namespace Base64.Utility
 {
-    public class Inbound
-    {
-        public int Id { get; set; }
-        public int UserId { get; set; }
-        public int Up { get; set; }
-        public int Down { get; set; }
-        public int Total { get; set; }
-        public string Remark { get; set; }
-        public bool Enable { get; set; }
-        public int ExpiryTime { get; set; }
-        public string Listen { get; set; }
-        public int Port { get; set; }
-        public string Protocol { get; set; }
-        public string Settings { get; set; }
-        public string StreamSettings { get; set; }
-        public string Tag { get; set; }
-        public string Sniffing { get; set; }
-    }
     public class ConfigsContext : DbContext
     {
-        public DbSet<Inbound> Inbounds { get; set; }
+        public DbSet<InboundModel> Inbounds { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite(@"Data Source=P:\sshkey\test.db");
+            optionsBuilder.UseSqlite(@"Data Source=P:\sshkey\test1.db");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Inbound>(entity =>
+            modelBuilder.Entity<InboundModel>(entity =>
             {
                 entity.ToTable("inbounds");
                 entity.Property(e => e.Id).HasColumnName("id");
@@ -57,5 +40,4 @@ namespace Base64.Utility
             });
         }
     }
-
 }

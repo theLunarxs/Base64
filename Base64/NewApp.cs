@@ -31,8 +31,25 @@ namespace Base64
         //Displaying different parts based on radioButtons/Checkboxes being checked
         private void chckCustomName_CheckedChanged(object sender, EventArgs e) => txtCustomName.Visible = chckCustomName.Checked;
         private void chckUnique_CheckedChanged(object sender, EventArgs e) => panelIndividualize.Visible = chckUnique.Checked;
-        private void chckIPService_CheckedChanged(object sender, EventArgs e) => PanelIPSource.Visible = chckIPService.Checked;
-        private void rdCustomIP_CheckedChanged(object sender, EventArgs e) => PanelIPDirectory.Visible = rdCustomIP.Checked;
+        private void chckIPService_CheckedChanged(object sender, EventArgs e)
+        {
+            PanelIPSource.Visible = chckIPService.Checked;
+            rdInputFile.Checked = false;
+            rdInputRaw.Checked = false;
+            txtFilePath.Text = string.Empty;
+            txtFilePath.Text = string.Empty;
+            PanelStoreOptions.Visible = false;
+        }
+        private void rdCustomIP_CheckedChanged(object sender, EventArgs e)
+        {
+            PanelIPDirectory.Visible = rdCustomIP.Checked;
+            rdInputFile.Checked = false;
+            rdInputRaw.Checked = false;
+            txtFilePath.Text = string.Empty;
+            txtFilePath.Text = string.Empty;
+            PanelStoreOptions.Visible = false;
+
+        }
         private void txtFilePath_TextChanged(object sender, EventArgs e) => PanelStoreOptions.Visible = !string.IsNullOrEmpty(txtFilePath.Text);
         private void txtIPInput_TextChanged(object sender, EventArgs e) => PanelStoreOptions.Visible = !string.IsNullOrEmpty(txtIPInput.Text);
         private void chckCustomPathtoDb_CheckedChanged(object sender, EventArgs e) => txtCustomPathtoDb.Visible = chckCustomPathtoDb.Checked;
@@ -64,22 +81,20 @@ namespace Base64
 
         private async void btnConnect_Click(object sender, EventArgs e)
         {
-            Tools.Server Clientserver = new Tools.Server() {IP = txtIPAddress.Text,Port=txtPort.Text, 
-                Username = txtUsername.Text, Password= txtPassword.Text};
-
-            List<string> ipList = new List<string>()
+            Tools.Server Clientserver = new Tools.Server()
             {
-                "1.1.1.1", "2.2.2.2"
+                IP = txtIPAddress.Text.Trim(),
+                Port = txtPort.Text.Trim(),
+                Username = txtUsername.Text.Trim(),
+                Password = txtPassword.Text.Trim()
             };
-            List<List<Inbound>> resinbounds = Tools.PermutateIPS(Tools.GetInbounds(), ipList);
-            foreach (var i in resinbounds)
-            {
-                Debug.WriteLine("Group of permutations:");
-                foreach (var j in i)
-                {
-                    Debug.WriteLine($"Inbound Id: {j.Id}, IPAddress: {Tools.GetIPAddress(j)}");
-                }
-            }
+            MessageBox.Show(await Tools.FetchDBFromServer(Clientserver));
+        }
+
+        private void btnLegacy_Click(object sender, EventArgs e)
+        {
+            var legacyForm = new LegacyForm();
+            legacyForm.Show();
         }
     }
 }

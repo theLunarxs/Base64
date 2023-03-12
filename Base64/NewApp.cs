@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using Base64.Utility;
+using System.Diagnostics;
 
 namespace Base64
 {
@@ -71,17 +64,22 @@ namespace Base64
 
         private async void btnConnect_Click(object sender, EventArgs e)
         {
-            //Tools.Server Clientserver = new Tools.Server() {IP = txtIPAddress.Text,Port=txtPort.Text, 
-            //    Username = txtUsername.Text, Password= txtPassword.Text, keyPath= @"P:\sshkey"};
+            Tools.Server Clientserver = new Tools.Server() {IP = txtIPAddress.Text,Port=txtPort.Text, 
+                Username = txtUsername.Text, Password= txtPassword.Text};
 
-            Tools.Server Clientserver = new() {
-                IP = txtIPAddress.Text,
-                Port = txtPort.Text,
-                Username= txtUsername.Text,
-                Password= txtPassword.Text,
+            List<string> ipList = new List<string>()
+            {
+                "1.1.1.1", "2.2.2.2"
             };
-           
-            MessageBox.Show(await Tools.FetchDBFromServer(Clientserver));
+            List<List<Inbound>> resinbounds = Tools.PermutateIPS(Tools.GetInbounds(), ipList);
+            foreach (var i in resinbounds)
+            {
+                Debug.WriteLine("Group of permutations:");
+                foreach (var j in i)
+                {
+                    Debug.WriteLine($"Inbound Id: {j.Id}, IPAddress: {Tools.GetIPAddress(j)}");
+                }
+            }
         }
     }
 }

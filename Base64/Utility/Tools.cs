@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Renci.SshNet;
 using System.Diagnostics;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using Renci.SshNet;
+using System.Text.Json;
+using Newtonsoft.Json.Linq;
 
-namespace Base64
+namespace Base64.Utility
 {
     public static class Tools
     {
@@ -18,7 +14,6 @@ namespace Base64
             public string Port;
             public string Username;
             public string Password;
-            public string keyPath;
         }
 
         public static string ConvertToBase64(string input, bool ios)
@@ -149,7 +144,7 @@ namespace Base64
                     {
                         try
                         {
-                            sftpClient.DownloadFile("/opt/freedom/x-ui/db/x-ui.db", fileStream);
+                            sftpClient.DownloadFile("/etc/x-ui/x-ui.db", fileStream);
                             Debug.WriteLine("File downloaded");
                         }
                         catch
@@ -169,6 +164,73 @@ namespace Base64
             Debug.WriteLine("Disconnected");
 
             return await Task.FromResult("Success");
+        }
+
+        public static List<Inbound> GetInbounds()
+        {
+            using (var context = new ConfigsContext())
+            {
+                var inbounds = context.Inbounds.ToList();
+                if (inbounds.Any())
+                {
+                    return inbounds;
+                }
+                throw new NullReferenceException();
+            }
+        }
+        // Encode Section \\
+
+
+        // IP Section \\
+        public static string GetIPAddress(Inbound inbound)
+        {
+            string json = inbound.StreamSettings;
+            var jObject = JObject.Parse(json);
+
+            // Access the "Host" value inside the "headers" object
+            string host = jObject["wsSettings"]!["headers"]!["Host"]!.Value<string>()!;
+            return host;
+        }
+        /*
+        This function takes in a list of inbound objects and a list of IP addresses.
+        It then generates all the possible combinations of the inbound objects with the given IP addresses.
+        The function uses LINQ to generate the combinations by iterating over the inbound objects and for each object,
+        it creates new inbound objects by replacing the IP address in the StreamSettings field with each IP address in the given list.
+        The new inbound objects are then added to a list of lists, where each inner list represents a combination of the inbound objects with a particular IP address.
+        Finally, the function returns the list of all combinations.
+        */
+        public static List<List<Inbound>> PermutateIPS(List<Inbound> inbounds, List<string> IPs)
+        {
+            var resInbounds = new List<List<Inbound>>();
+
+            foreach (var inbound in inbounds)
+            {
+                var newInbounds = IPs.Select(ip =>
+                {
+                    var newInbound = new Inbound
+                    {
+                        Id = inbound.Id,
+                        UserId = inbound.UserId,
+                        Up = inbound.Up,
+                        Down = inbound.Down,
+                        Total = inbound.Total,
+                        Remark = inbound.Remark,
+                        Enable = inbound.Enable,
+                        ExpiryTime = inbound.ExpiryTime,
+                        Listen = inbound.Listen,
+                        Port = inbound.Port,
+                        Protocol = inbound.Protocol,
+                        Settings = inbound.Settings,
+                        StreamSettings = inbound.StreamSettings.Replace(GetIPAddress(inbound), ip),
+                        Tag = inbound.Tag,
+                        Sniffing = inbound.Sniffing
+                    };
+                    return newInbound;
+                }).ToList();
+                resInbounds.Add(newInbounds);
+            }
+
+            return resInbounds;
         }
     }
 }

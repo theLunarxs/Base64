@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using System.Windows.Forms;
+using Base64.Utility;
 
 namespace Base64
 {

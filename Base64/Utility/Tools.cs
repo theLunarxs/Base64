@@ -6,6 +6,7 @@ using Base64.Utility.Models;
 using Base64.Utility;
 using Newtonsoft.Json;
 using Microsoft.VisualBasic.ApplicationServices;
+using System.Text.Json;
 
 namespace Base64.Utility
 {
@@ -203,6 +204,16 @@ namespace Base64.Utility
             string sni = jObject["tlsSettings"]!["serverName"]!.Value<string>()!;
             return sni;
         }
+        public static string GetID(InboundModel inbound)
+        {
+            string json = inbound.StreamSettings;
+            JsonDocument JDOC = JsonDocument.Parse(json);
+            string ID = JDOC.RootElement
+                .GetProperty("clients")[0]
+                .GetProperty("id")
+                .GetString()!;
+            return ID;
+        }
         public static List<List<InboundModel>> PermutateIPS(List<InboundModel> inbounds, List<string> IPs)
         {
             /*
@@ -252,7 +263,7 @@ Finally, the function returns the list of all combinations.
                 ps = inbound.Remark,
                 add = GetIPAddress(inbound),
                 port = inbound.Port,
-                id = inbound.Id.ToString(),
+                id = GetID(inbound),
                 aid = 0,
                 scy = "auto",
                 net = "ws",
@@ -263,6 +274,27 @@ Finally, the function returns the list of all combinations.
                 alpn = ""
             });
             return ConvertToBase64(VmessLink, false);
+        }
+        public static VlessModel VlessObjGenerator(InboundModel inbound)
+        {
+            var VlessObject = new VlessModel
+            {
+                UUID = GetID(inbound),
+                Address = GetIPAddress(inbound),
+                Port = inbound.Port,
+                type = "ws",
+                security = "tls",
+                path = $"/wss{inbound.Port}",
+                host = GetSNI(inbound),
+                SNI = GetSNI(inbound),
+                Remark = "#" + inbound.Remark
+            };
+            return VlessObject;
+        }
+        public static string ToVlessLink(this VlessModel VlessObject)
+        {
+            return $"vless://{VlessObject.UUID}@{VlessObject.Address}:{VlessObject.Port}?sni={VlessObject.SNI}&security={VlessObject.security}&type={VlessObject.type}" +
+                $"&path={VlessObject.path}&host={VlessObject.host}{VlessObject.Remark}";
         }
     }
 }

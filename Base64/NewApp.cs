@@ -1,4 +1,5 @@
 ﻿using Base64.Utility;
+using Base64.Utility.Models;
 using System.Diagnostics;
 
 namespace Base64
@@ -94,6 +95,7 @@ namespace Base64
         private void btnLegacy_Click(object sender, EventArgs e)
         {
             var legacyForm = new LegacyForm();
+
             legacyForm.Show();
         }
     }

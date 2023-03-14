@@ -13,7 +13,12 @@ namespace Base64
                 $"{Environment.NewLine}" + "as you can read in our code stored on github";
 
         }
+        private void btnLegacy_Click(object sender, EventArgs e)
+        {
+            var legacyForm = new LegacyForm();
 
+            legacyForm.Show();
+        }
         private void btnResDirectory_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog FD = new())
@@ -82,21 +87,30 @@ namespace Base64
 
         private async void btnConnect_Click(object sender, EventArgs e)
         {
-            Tools.Server Clientserver = new Tools.Server()
+            Tools.Server Clientserver = new()
             {
                 IP = txtIPAddress.Text.Trim(),
                 Port = txtPort.Text.Trim(),
                 Username = txtUsername.Text.Trim(),
                 Password = txtPassword.Text.Trim()
             };
-            MessageBox.Show(await Tools.FetchDBFromServer(Clientserver));
-        }
 
-        private void btnLegacy_Click(object sender, EventArgs e)
-        {
-            var legacyForm = new LegacyForm();
+            Tools.Configuration Config = new()
+            {
+                path = @txtResPath.Text.Trim(),
+                text = rdInputRaw.Checked ? txtIPInput.Text.Trim() : "",
+                unique = chckUnique.Checked,
+                useNumberAndLetter = chckUnique.Checked && rdNumbersLetters.Checked,
+                SeperatePermutations = rdStoreSeperate.Checked,
+                IPFilePath = rdInputFile.Checked? @txtFilePath.Text.Trim() : "",
+                Seedname = chckCustomName.Checked ? txtCustomName.Text.Trim() : "result",
+                IPsection = chckIPService.Checked
+            };
 
-            legacyForm.Show();
+            if (Tools.TestConnection(Clientserver))
+            {
+                await Tools.MakeitWork(Clientserver, Config);
+            }
         }
     }
 }

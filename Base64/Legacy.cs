@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Base64.Utility;
+using Base64.Utility.LegacyFuncs;
 
 namespace Base64
 {
@@ -22,10 +23,10 @@ namespace Base64
                 lblSuccess.Text = "Success!";
                 lblSuccess.ForeColor = Color.SeaGreen;
                 lblSuccess.Visible = true;
-                Tools.MakeLabelGo(5000, lblSuccess);
+                Visual.MakeLabelGo(5000, lblSuccess);
 
 
-                txtResult.Text = Tools.ConvertToBase64(txtInput.Text, chckbxIOS.Checked);
+                txtResult.Text = LegacyFuncs.ConvertToBase64(txtInput.Text, chckbxIOS.Checked);
             }
 
             else
@@ -33,7 +34,7 @@ namespace Base64
                 lblSuccess.Text = "Please Enter Something as Input!";
                 lblSuccess.ForeColor = Color.DarkRed;
                 lblSuccess.Visible = true;
-                Tools.MakeLabelGo(5000, lblSuccess);
+                Visual.MakeLabelGo(5000, lblSuccess);
             }
 
         }
@@ -55,7 +56,7 @@ namespace Base64
                     lblSuccess.Text = "Error in Path!";
                     lblSuccess.ForeColor = Color.DarkRed;
                     lblSuccess.Visible = true;
-                    Tools.MakeLabelGo(5000, lblSuccess);
+                    Visual.MakeLabelGo(5000, lblSuccess);
                 }
             }
             if (rdSelectFile.Checked)
@@ -70,7 +71,7 @@ namespace Base64
                     lblSuccess.Text = "Error in File!";
                     lblSuccess.ForeColor = Color.DarkRed;
                     lblSuccess.Visible = true;
-                    Tools.MakeLabelGo(5000, lblSuccess);
+                    Visual.MakeLabelGo(5000, lblSuccess);
                 }
             }
 
@@ -84,7 +85,7 @@ namespace Base64
                 lblSuccess.Text = "Please Enter Something as Input!";
                 lblSuccess.ForeColor = Color.DarkRed;
                 lblSuccess.Visible = true;
-                Tools.MakeLabelGo(3000, lblSuccess);
+                Visual.MakeLabelGo(3000, lblSuccess);
             }
             else
             {
@@ -93,7 +94,7 @@ namespace Base64
                     lblSuccess.Text = "Path is Empty";
                     lblSuccess.ForeColor = Color.DarkRed;
                     lblSuccess.Visible = true;
-                    Tools.MakeLabelGo(3000, lblSuccess);
+                    Visual.MakeLabelGo(3000, lblSuccess);
                 }
                 else
                 {
@@ -101,11 +102,11 @@ namespace Base64
                     lblSuccess.Text = "Success!";
                     lblSuccess.ForeColor = Color.SeaGreen;
                     lblSuccess.Visible = true;
-                    Tools.MakeLabelGo(5000, lblSuccess);
-                    var result = Tools.ConvertToBase64(txtInput.Text, chckbxIOS.Checked);
+                    Visual.MakeLabelGo(5000, lblSuccess);
+                    var result = LegacyFuncs.ConvertToBase64(txtInput.Text, chckbxIOS.Checked);
                     txtResult.Text = result;
-
-                    resultFile = await Tools.WriteToFileAsync(txtPath.Text, result, false, chckUnique.Checked, useNumberAndLetter);
+                    
+                    resultFile = await LegacyFuncs.WriteToFileAsync(txtPath.Text, result, false, chckUnique.Checked, useNumberAndLetter);
                     btnShowInFolder.Visible = true;
 
                 }
@@ -120,7 +121,7 @@ namespace Base64
                 lblSuccess.Text = "Please Enter Something as Input!";
                 lblSuccess.ForeColor = Color.DarkRed;
                 lblSuccess.Visible = true;
-                Tools.MakeLabelGo(3000, lblSuccess);
+                Visual.MakeLabelGo(3000, lblSuccess);
             }
             else
             {
@@ -129,7 +130,7 @@ namespace Base64
                     lblSuccess.Text = "Path is Empty!";
                     lblSuccess.ForeColor = Color.DarkRed;
                     lblSuccess.Visible = true;
-                    Tools.MakeLabelGo(3000, lblSuccess);
+                    Visual.MakeLabelGo(3000, lblSuccess);
                 }
                 else
                 {
@@ -137,11 +138,11 @@ namespace Base64
                     lblSuccess.Text = "Success!";
                     lblSuccess.ForeColor = Color.SeaGreen;
                     lblSuccess.Visible = true;
-                    Tools.MakeLabelGo(5000, lblSuccess);
-                    var result = Tools.ConvertToBase64(txtInput.Text, chckbxIOS.Checked);
+                    Visual.MakeLabelGo(5000, lblSuccess);
+                    var result = LegacyFuncs.ConvertToBase64(txtInput.Text, chckbxIOS.Checked);
                     txtResult.Text = result;
 
-                    resultFile = await Tools.WriteToFileAsync(txtPath.Text, result, true, chckUnique.Checked, useNumberAndLetter);
+                    resultFile = await LegacyFuncs.WriteToFileAsync(txtPath.Text, result, true, chckUnique.Checked, useNumberAndLetter);
                     btnShowInFolder.Visible = true;
                 }
             }
@@ -182,7 +183,7 @@ namespace Base64
                     lblSuccess.Text = "Path is Empty!";
                     lblSuccess.ForeColor = Color.DarkRed;
                     lblSuccess.Visible = true;
-                    Tools.MakeLabelGo(3000, lblSuccess);
+                    Visual.MakeLabelGo(3000, lblSuccess);
                     chckUnique.Checked = false;
                 }
             }
@@ -217,7 +218,7 @@ namespace Base64
                 lblSuccess.Text = "Please Enter Something as Input!";
                 lblSuccess.ForeColor = Color.DarkRed;
                 lblSuccess.Visible = true;
-                Tools.MakeLabelGo(3000, lblSuccess);
+                Visual.MakeLabelGo(3000, lblSuccess);
             }
             else
             {
@@ -226,7 +227,7 @@ namespace Base64
                     lblSuccess.Text = "Path is Empty";
                     lblSuccess.ForeColor = Color.DarkRed;
                     lblSuccess.Visible = true;
-                    Tools.MakeLabelGo(3000, lblSuccess);
+                    Visual.MakeLabelGo(3000, lblSuccess);
                 }
                 else
                 {
@@ -234,11 +235,11 @@ namespace Base64
                     lblSuccess.Text = "Success!";
                     lblSuccess.ForeColor = Color.SeaGreen;
                     lblSuccess.Visible = true;
-                    Tools.MakeLabelGo(5000, lblSuccess);
-                    var result = Tools.ConvertToBase64(txtInput.Text, chckbxIOS.Checked);
+                    Visual.MakeLabelGo(5000, lblSuccess);
+                    var result = LegacyFuncs.ConvertToBase64(txtInput.Text, chckbxIOS.Checked);
                     txtResult.Text = result;
 
-                    resultFile = await Tools.WriteToFileAsync(txtPath.Text, result, txtBaseName.Text, chckUnique.Checked, useNumberAndLetter);
+                    resultFile = await LegacyFuncs.WriteToFileAsync(txtPath.Text, result, txtBaseName.Text, chckUnique.Checked, useNumberAndLetter);
                     btnShowInFolder.Visible = true;
                 }
             }

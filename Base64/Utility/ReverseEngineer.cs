@@ -9,7 +9,9 @@ namespace Base64.Utility
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite(@"Data Source=P:\sshkey\test1.db");
+            if (!Directory.Exists(@"DB\"))
+                Directory.CreateDirectory(@"DB\");
+            optionsBuilder.UseSqlite(@"Data Source=DB\yourDB.db");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

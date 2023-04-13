@@ -1,6 +1,7 @@
 ﻿using Base64.Utility;
 using Base64.Utility.Models;
 using System.Diagnostics;
+using static Base64.Utility.Configuration;
 
 namespace Base64
 {
@@ -9,7 +10,7 @@ namespace Base64
         public NewApp()
         {
             InitializeComponent();
-            this.lblDisclosure.Text = $"Please note that we won't be storing your server's Info (IP Address, Username, Password)" +
+            lblDisclosure.Text = $"Please note that we won't be storing your server's Info (IP Address, Username, Password)" +
                 $"{Environment.NewLine}" + "as you can read in our code stored on github";
 
         }
@@ -87,7 +88,7 @@ namespace Base64
 
         private async void btnConnect_Click(object sender, EventArgs e)
         {
-            Tools.Server Clientserver = new()
+            Server Clientserver = new()
             {
                 IP = txtIPAddress.Text.Trim(),
                 Port = txtPort.Text.Trim(),
@@ -95,21 +96,28 @@ namespace Base64
                 Password = txtPassword.Text.Trim()
             };
 
-            Tools.Configuration Config = new()
+            TaskConfiguration TaskConfig = new()
+            {
+
+                SeperatePermutations = rdStoreSeperate.Checked,
+                IPFilePath = rdInputFile.Checked? @txtFilePath.Text.Trim() : "",
+
+                IPsection = chckIPService.Checked
+            };
+            IOConfig IOconfig = new()
             {
                 path = @txtResPath.Text.Trim(),
                 text = rdInputRaw.Checked ? txtIPInput.Text.Trim() : "",
                 unique = chckUnique.Checked,
                 useNumberAndLetter = chckUnique.Checked && rdNumbersLetters.Checked,
-                SeperatePermutations = rdStoreSeperate.Checked,
-                IPFilePath = rdInputFile.Checked? @txtFilePath.Text.Trim() : "",
                 Seedname = chckCustomName.Checked ? txtCustomName.Text.Trim() : "result",
-                IPsection = chckIPService.Checked
             };
+
+            Configuration config = new(Clientserver, IOconfig, TaskConfig);
 
             if (Tools.TestConnection(Clientserver))
             {
-                await Tools.MakeitWork(Clientserver, Config);
+                //await Tools.MakeitWork(Clientserver, config);
             }
         }
     }

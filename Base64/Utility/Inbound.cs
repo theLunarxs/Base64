@@ -8,9 +8,14 @@ namespace Base64.Utility
 {
     public static class Inbound
     {
-        public static List<InboundModel> GetInbounds(this bool success, string PanelType)
+        public enum PanelType
         {
-            if (success && PanelType.ToLower() == "mhsanaei")
+            mhSanaei,
+            FranzKafka
+        }
+        public static List<InboundModel> GetInbounds(this bool success, PanelType paneltype)
+        {
+            if (success && paneltype == PanelType.mhSanaei)
             {
                 using (var context = new MhSanaeiConfigsContext())
                 {
@@ -22,7 +27,7 @@ namespace Base64.Utility
                     throw new NullReferenceException();
                 }
             }
-            else if (success && PanelType.ToLower() == "kafka")
+            else if (success && paneltype == PanelType.FranzKafka)
             {
                 using (var context = new KafkaConfigsContext())
                 {

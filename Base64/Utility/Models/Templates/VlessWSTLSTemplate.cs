@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Base64.Utility.Models.Templates
 {
-    public class VmessWSTLSTemplate
+    internal class VlessWSTLSTemplate
     {
         public class Configuration
         {
             public List<Inbound> Inbounds { get; set; }
             public List<Outbound> Outbounds { get; set; }
-            public Dictionary<string, object> Other { get; set; }
+            public Other Other { get; set; }
         }
 
         public class Inbound
@@ -23,7 +22,7 @@ namespace Base64.Utility.Models.Templates
             public string Tag { get; set; }
             public string Protocol { get; set; }
             public InboundSettings Settings { get; set; }
-            public InboundSniffing Sniffing { get; set; }
+            public Sniffing Sniffing { get; set; }
         }
 
         public class InboundSettings
@@ -33,59 +32,69 @@ namespace Base64.Utility.Models.Templates
             public string Ip { get; set; }
         }
 
-        public class InboundSniffing
+        public class Sniffing
         {
             public bool Enabled { get; set; }
-            public List<string> destOverride { get; set; }
+            public List<string> DestOverride { get; set; }
         }
 
         public class Outbound
         {
+            public string Tag { get; set; }
             public string Protocol { get; set; }
             public OutboundSettings Settings { get; set; }
-            public OutboundStreamSettings StreamSettings { get; set; }
+            public StreamSettings StreamSettings { get; set; }
         }
 
         public class OutboundSettings
         {
-            public List<OutboundServer> Vnext { get; set; }
+            public List<Vnext> Vnext { get; set; }
         }
 
-        public class OutboundServer
+        public class Vnext
         {
             public string Address { get; set; }
             public int Port { get; set; }
-            public List<OutboundUser> Users { get; set; }
+            public List<User> Users { get; set; }
         }
 
-        public class OutboundUser
+        public class User
         {
             public string Id { get; set; }
+            public string Encryption { get; set; }
         }
 
-        public class OutboundStreamSettings
+        public class StreamSettings
         {
             public string Network { get; set; }
             public string Security { get; set; }
-            public OutboundWsSettings WsSettings { get; set; }
-            public OutboundTlsSettings TlsSettings { get; set; }
+            public TlsSettings TlsSettings { get; set; }
+            public WsSettings WsSettings { get; set; }
         }
 
-        public class OutboundWsSettings
+        public class TlsSettings
         {
-            public Headers Headers { get; set; }
-            public string Path { get; set; }
+            public bool AllowInsecure { get; set; }
+            public string ServerName { get; set; }
+            public List<string> Alpn { get; set; }
+            public string Fingerprint { get; set; }
         }
+
+        public class WsSettings
+        {
+            public string Path { get; set; }
+            public Headers Headers { get; set; }
+        }
+
         public class Headers
         {
             public string Host { get; set; }
         }
-        public class OutboundTlsSettings
+
+        public class Other
         {
-            public string ServerName { get; set; }
-            public bool AllowInsecure { get; set; }
-            public string Fingerprint { get; set; }
-            public List<string> Alpn { get; set; }
+
         }
+
     }
 }

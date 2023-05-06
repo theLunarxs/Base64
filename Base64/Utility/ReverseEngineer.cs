@@ -13,6 +13,7 @@ namespace Base64.Utility
                 Directory.CreateDirectory(@"DB\");
             optionsBuilder.UseSqlite(@"Data Source=DB\yourDB.db");
         }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<InboundModel>(entity =>

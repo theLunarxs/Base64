@@ -93,7 +93,6 @@ namespace Base64.Utility.Scanner
                 File.WriteAllText(TemplateConfigPath, result);
             }
         }
-
         public enum ConfigType
         {
             Vmess,
@@ -113,5 +112,6 @@ namespace Base64.Utility.Scanner
 
             return 3000 + sum;
         }
+
     }
 }

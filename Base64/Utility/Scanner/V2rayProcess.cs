@@ -10,34 +10,38 @@ namespace Base64.Utility.Scanner
 {
     public class V2rayProcess
     {
-        private string V2rayExePath = "";
-        private ProcessStartInfo startInfo;
-        private Process process;
-        private int downloadTimeout;
-        private float downloadDuration;
-        private double targetSpeed;
+        private readonly string _V2rayExePath = @"\V2ray\V2ray.exe";
+        private ProcessStartInfo _startInfo;
+        private Process _process;
+        private int _downloadTimeout;
+        private float _downloadDuration;
+        private double _targetSpeed;
 
-        public V2rayProcess(ClientConfig Config) 
+        public V2rayProcess()
         {
-            startInfo.FileName = V2rayExePath;
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            startInfo.RedirectStandardOutput = true;
-            startInfo.RedirectStandardError = true;
-            startInfo.CreateNoWindow = true;
-            startInfo.UseShellExecute = false;
-            process = new Process();
+            _startInfo.FileName = _V2rayExePath;
+            _startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            _startInfo.RedirectStandardOutput = true;
+            _startInfo.RedirectStandardError = true;
+            _startInfo.CreateNoWindow = true;
+            _startInfo.UseShellExecute = false;
+            _process = new Process();
+        }
+        ~V2rayProcess()
+        {
+            _process.Kill();
         }
         public bool Start(string ConfigPath)
-        { 
-            startInfo.Arguments = $"run -config=\"{ConfigPath}\"";
+        {
+            _startInfo.Arguments = $"run -config=\"{ConfigPath}\"";
 
-            process = Process.Start(startInfo)!;
+            _process = Process.Start(_startInfo)!;
 
             Thread.Sleep(1500);
 
-            return process.Responding && !process.HasExited;
+            return _process.Responding && !_process.HasExited;
         }
-        private bool checkDownloadSpeed(int port)
+        private async Task<bool> CheckDownloadSpeed(int port)
         {
             var proxy = new WebProxy();
             proxy.Address = new Uri($"socks5://127.0.0.1:{port}");
@@ -46,25 +50,31 @@ namespace Base64.Utility.Scanner
                 Proxy = proxy
             };
 
-            int timeout = downloadTimeout;
+            int timeout = _downloadTimeout;
 
             var client = new HttpClient(handler);
             client.Timeout = TimeSpan.FromSeconds(timeout); // 2 seconds
-            Stopwatch sw =  new Stopwatch();
-            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
+            Stopwatch sw = new Stopwatch();
 
             try
             {
                 sw.Start();
-                string dlUrl = "https://speed.cloudflare.com/__down?bytes=" + (targetSpeed * 1000 * downloadTimeout);
-                var data = client.GetStringAsync(dlUrl).Result;
+                string dlUrl = "https://speed.cloudflare.com/__down?bytes=" + (_targetSpeed * 1000 * _downloadTimeout);
 
-                return data.Length == (targetSpeed * 1000 * downloadTimeout) * timeout;
+                var data = await client.GetStringAsync(dlUrl);
+
+                return data.Length == _targetSpeed * 1000 * _downloadTimeout;
             }
+
+            catch
+            {
+                return false;
+            }
+
             finally
             {
-                downloadDuration = sw.ElapsedMilliseconds;
-                if(downloadDuration > (timeout * 1000) + 500)
+                _downloadDuration = sw.ElapsedMilliseconds;
+                if (_downloadDuration > (timeout * 1000) + 500)
                 {
 
                 }

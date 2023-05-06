@@ -5,8 +5,14 @@ using static Base64.Utility.Configuration;
 
 namespace Base64.Utility
 {
-    public static class Database
+    public class Database
     {
+        private readonly string _dataBasePath;
+        public Database(string pathToDB)
+        {
+            _dataBasePath = pathToDB;
+        }
+
         public static bool FetchDBFromServer(Server ClientServer)
         {
             var connectionInfo = new ConnectionInfo(ClientServer.IP, int.Parse(ClientServer.Port), ClientServer.Username,
@@ -24,7 +30,7 @@ namespace Base64.Utility
                     {
                         try
                         {
-                            sftpClient.DownloadFile("/etc/x-ui/x-ui.db", fileStream);
+                            sftpClient.DownloadFile($"", fileStream);
                             Debug.WriteLine("File downloaded");
                         }
                         catch

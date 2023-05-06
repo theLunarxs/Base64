@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Base64.Utility.Inbound;
 
 namespace Base64.Utility
 {
@@ -11,7 +12,6 @@ namespace Base64.Utility
         public Server ClientServer;
         public IOConfig IOconfig;
         public TaskConfiguration TaskConfig;
-
         public Configuration(Server ClientServer, IOConfig Ioconfig, TaskConfiguration TaskConfig)
         {
             this.IOconfig = Ioconfig;
@@ -25,7 +25,7 @@ namespace Base64.Utility
             public string Port;
             public string Username;
             public string Password;
-            public string PanelType;
+            public PanelType PanelType;
         }
         public struct TaskConfiguration
         {

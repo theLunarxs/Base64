@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Reflection.Metadata;
 using System.Windows.Forms.Design;
 
 namespace Base64.Utility.Scanner
@@ -11,13 +12,19 @@ namespace Base64.Utility.Scanner
     {
         // IPsDirectory, where the files containing IPs are at.
         public readonly string IPsDirectory;
+
         // this enum delcares where we have received our IPs from, whether it's from server (API) or LocalFile coming with program(Local)
         //      or it's received manually from user (Input).
         public readonly ListStatus IPListStatus;
+
         // this is the path where "Local" is at.
         private const string _cfpath = @"\services\cfIPlist.txt";
+
         // this is where the IPs files will be written at.
         private const string _defPath = @$"/IPRanges";
+
+        private Dictionary<string, List<string>> _ipRanges;
+        
         public enum ListStatus
         {
             Local,
@@ -26,7 +33,7 @@ namespace Base64.Utility.Scanner
         }
 
         // this CTOR manages the object initialization when the given file is RangesFile ** e.g contains "192.168.1.1/24"
-        public CFIPList(string filePath)
+        public CFIPList(string filePath, bool append, bool isIPsFile = false)
         {
 
             string[] cfList;
@@ -48,25 +55,38 @@ namespace Base64.Utility.Scanner
                 IPListStatus = ListStatus.Input;
             }
 
-            // we Generate all the IPs in the given ranges using this function. for more info, read the function
-            List<List<string>> IPList = GenerateIP(cfList);
-
-            foreach (var IP in IPList)
+            if (isIPsFile && IPListStatus == ListStatus.Input)
             {
-                // and now I write each range to a separate file because I want to reduce memory usage 
-                // when reading them.
-                // for example, if the result is 250k IPs, I don't want to store them all in one file with 250k lines
-                //      instead, I divied them into multiple files, this way each time I for example scan 192 range, I wouldn't
-                //      be having range 23 stored in my memory, and when I'm done with 192, the file closes, the RAM cleans itself,
-                //      and I proceed to range 23 and so on.
-                _ = IPAddressExtension.WriteRangeToDisk(IP).Result;
+                // if the file contains IPs, we sort them by IPranges
+                cfList.SortIPArrayByIPRange(out _ipRanges);
+
+                _ = IPAddressExtension.WriteRangeToDisk(_ipRanges, append);
             }
+
+            // in case the given file is Ranges File: ( in format of 192.168.1.1/24 for example)
+            else
+            {
+                // we Generate all the IPs in the given ranges using this function. for more info, read the function
+                List<List<string>> IPList = GenerateIP(cfList);
+
+                foreach (var IP in IPList)
+                {
+                    // and now I write each range to a separate file because I want to reduce memory usage 
+                    // when reading them.
+                    // for example, if the result is 250k IPs, I don't want to store them all in one file with 250k lines
+                    //      instead, I divied them into multiple files, this way each time I for example scan 192 range, I wouldn't
+                    //      be having range 23 stored in my memory, and when I'm done with 192, the file closes, the RAM cleans itself,
+                    //      and I proceed to range 23 and so on.
+                    _ = IPAddressExtension.WriteRangeToDisk(IP, append).Result;
+                }
+            }
+
             // the IPsDirectory points to where all these ranges are written to disk at.
             IPsDirectory = _defPath;
         }
 
         // in this CTOR I'll be receiving my IPs from API address on a Server containing all these IPs.
-        public CFIPList(string APIAddress, string ISP)
+        public CFIPList(string APIAddress, string ISP, bool append)
         {
             try
             {
@@ -77,8 +97,10 @@ namespace Base64.Utility.Scanner
                 //      it will also store them in a string Array.
                 string[] IPs = _apiService.GetIPAddressesToScanAsync(ISP).GetAwaiter().GetResult();
 
+                IPs.SortIPArrayByIPRange(out _ipRanges);
                 // this code will sort the IPs received from the API before Writing them to list, to help with the readibility
-                _ = IPAddressExtension.WriteRangeToDisk(IPs.OrderBy(ip => IPAddress.Parse(ip)).ToArray(), $"{ISP} - {DateTime.Now}.txt");
+                _ = IPAddressExtension.WriteRangeToDisk(_ipRanges, append);
+                //_ = IPAddressExtension.WriteRangeToDisk(IPs.OrderBy(ip => IPAddress.Parse(ip)).ToArray(), $"{ISP} - {DateTime.Now}.txt");
                 // 
                 IPsDirectory = _defPath;
                 IPListStatus = ListStatus.API;
@@ -92,31 +114,15 @@ namespace Base64.Utility.Scanner
         // In this CTOR I will be receiving IPs directly from user in a textbox for example.
         public CFIPList(string[] UserIPS, bool append)
         {
-            // we'll add them to a HashSet to get rid of any Duplicates.
-            HashSet<string> UniqueIPs = new(UserIPS);
-
             // this Dictionary is in string,List<string> format
             //      the first string is the IP range e.g 192.168.1
             //      the List<string> is all the IPs lying in that range.
-            Dictionary<string, List<string>> ipRanges = new();
 
-            // this foreach loop will:
-            //      first split the Network from the Home part => for example: input: "192.168.1.1" output: "192.168.1" and "1"
-            //      then it will check if we already have a key for that range in Dictionary, if not, it will add a key by the name
-            //              of that network.
-            //      on the last line it will add the IPaddress as the value to it's corresponding key. 
-            foreach (var IPAddress in UniqueIPs)
-            {
-                var ipRange = IPAddress.Substring(0, IPAddress.LastIndexOf('.'));
-                if (!ipRanges.ContainsKey(ipRange))
-                {
-                    ipRanges.Add(ipRange, new List<string>());
-                }
-                ipRanges[ipRange].Add(IPAddress);
-            }
+            UserIPS.SortIPArrayByIPRange(out _ipRanges);
+
 
             // finally it will write each range to a different file.
-            _ = IPAddressExtension.WriteRangeToDisk(ipRanges, append);
+            _ = IPAddressExtension.WriteRangeToDisk(_ipRanges, append);
             IPsDirectory = _defPath;
         }
 
@@ -124,20 +130,18 @@ namespace Base64.Utility.Scanner
         {
             try
             {
-                // create a HashSet to ensure unique IPs
-                HashSet<string> UniqueIPs = new(IPlist);
-
                 // create a List of Lists to store IP ranges
                 List<List<string>> result = new();
 
-                // loop through each IP in the HashSet
-                foreach (var Line in UniqueIPs)
+                // loop through each IP in the HashSet, we made HashSet to avoid any duplicates.
+                foreach (var Line in new HashSet<string>(IPlist))
                 {
                     // check if IP is not null, has 4 octets, and contains a forward slash
                     if (Line != null && Line.Split(".").Length == 4 && Line.Contains('/'))
                     {
                         // if IP is valid, generate a list of all IPs in the range and add it to the result
                         var IPsFromIPRange = IPAddressExtension.GetAllIPsFromIPRange(Line);
+
                         result.Add(IPsFromIPRange);
                     }
                 }
@@ -241,12 +245,39 @@ namespace Base64.Utility.Scanner
             }
             return count;
         }
-
     }
 
     public static class IPAddressExtension
     {
         private const string _filePath = @$"/IPRanges";
+
+        public static void SortIPArrayByIPRange(this string[] IPs, out Dictionary<string, List<string>> SortedResult)
+        {
+            // this Dictionary has the range as Key and all the IPs in that range as values
+            Dictionary<string, List<string>> ipRanges = new();
+
+            // this foreach loop will:
+            //      first split the Network from the Home part => for example: input: "192.168.1.1" output: "192.168.1" and "1"
+            //      then it will check if we already have a key for that range in Dictionary, if not, it will add a key by the name
+            //              of that network.
+            //      on the last line it will add the IPaddress as the value to it's corresponding key.
+            //
+
+            // we make a HashSet to avoid any duplicates
+            foreach (var IPAddress in new HashSet<string>(IPs))
+            {
+                // we separate the Range from the home network
+                var ipRange = IPAddress.Substring(0, IPAddress.LastIndexOf('.'));
+                // if we don't have a key for that range, we add it to the dictionary
+                if (!ipRanges.ContainsKey(ipRange))
+                {
+                    ipRanges.Add(ipRange, new List<string>());
+                }
+                // we add the corresponding IPs to the range key.
+                ipRanges[ipRange].Add(IPAddress);
+            }
+            SortedResult = ipRanges;
+        }
 
         // This extension method takes an array of string IPs and returns a list of all IPs within the specified IP ranges.
         public static async Task<List<string>> IPRangeToIPs(this string[] IPs)
@@ -296,7 +327,8 @@ namespace Base64.Utility.Scanner
         }
 
 
-        // This method takes an IP address and a prefix length (e.g. 24 for a /24 network) and returns the start and end IPs for that subnet, as well as the total number of IPs in the subnet.
+        // This method takes an IP address and a prefix length (e.g. 24 for a /24 network) and returns the start and end IPs for that subnet,
+        // as well as the total number of IPs in the subnet.
         private static (uint start, uint end, uint total) GetIPInfo(string IP, int hostLength)
         {
             uint start;
@@ -334,7 +366,7 @@ namespace Base64.Utility.Scanner
         // This method writes a list of IP addresses to a file on disk.
         // The file name is constructed from the first two octets of the first IP address.
         // The full path to the file is determined using a static variable _filePath.
-        public static async Task<string> WriteRangeToDisk(List<string> IPs)
+        public static async Task<string> WriteRangeToDisk(List<string> IPs, bool append)
         {
             // Extract the first two octets of the first IP address to use as the filename.
             string filename = IPs[0].Split(".")[0] + '-' + IPs[0].Split(".")[1];
@@ -344,8 +376,23 @@ namespace Base64.Utility.Scanner
 
             try
             {
-                // Write the list of IP addresses to the file asynchronously.
-                await File.WriteAllLinesAsync(fullPath, IPs);
+                if(append)
+                {
+                    // If "append" is true, append the list of IP addresses to the existing file if it exists.
+                    await File.AppendAllLinesAsync(fullPath, IPs);
+                }
+                else
+                {
+                    // If "append" is false, check if a file with the same name already exists.
+                    if (File.Exists(fullPath))
+                    {
+                        // If a file with the same name already exists, construct a new filename with the current date and time appended to it.
+                        fullPath = Path.Combine(_filePath, $"{Path.GetFileNameWithoutExtension(fullPath) + '-' + DateTime.Now.TimeOfDay}.txt");
+                    }
+                    // Write the list of IP addresses to the file asynchronously.
+                    await File.WriteAllLinesAsync(fullPath, IPs);
+
+                }
 
                 // Return the full path to the file.
                 return fullPath;

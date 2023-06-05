@@ -1,9 +1,8 @@
 ﻿using Renci.SshNet;
 using System.Diagnostics;
-using static Base64.Utility.Tools;
-using static Base64.Utility.Configuration;
+using static Base64.Utility.Classes.Configuration;
 
-namespace Base64.Utility
+namespace Base64.Utility.Classes
 {
     public class Database
     {

@@ -1,6 +1,6 @@
-using System.Diagnostics;
-using Base64.Utility;
+using Base64.Utility.Classes;
 using Base64.Utility.LegacyFuncs;
+using System.Diagnostics;
 
 namespace Base64
 {
@@ -105,7 +105,7 @@ namespace Base64
                     Visual.MakeLabelGo(5000, lblSuccess);
                     var result = LegacyFuncs.ConvertToBase64(txtInput.Text, chckbxIOS.Checked);
                     txtResult.Text = result;
-                    
+
                     resultFile = await LegacyFuncs.WriteToFileAsync(txtPath.Text, result, false, chckUnique.Checked, useNumberAndLetter);
                     btnShowInFolder.Visible = true;
 

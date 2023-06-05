@@ -1,8 +1,7 @@
 ﻿using Newtonsoft.Json;
-using System.Collections.Generic;
 using System.Text.Json.Nodes;
 
-namespace Base64.Utility
+namespace Base64.Utility.Classes
 {
     public class APIService
     {

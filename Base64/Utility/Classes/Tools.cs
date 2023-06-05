@@ -1,10 +1,9 @@
-﻿using Renci.SshNet;
+﻿using Base64.Utility.Models;
+using Renci.SshNet;
 using System.Text;
-using Base64.Utility.Models;
-using static Base64.Utility.Configuration;
-using Base64.Utility;
+using static Base64.Utility.Classes.Configuration;
 
-namespace Base64.Utility
+namespace Base64.Utility.Classes
 {
     public static class Tools
     {

@@ -1,7 +1,5 @@
-﻿using Base64.Utility;
-using Base64.Utility.Models;
-using System.Diagnostics;
-using static Base64.Utility.Configuration;
+﻿using Base64.Utility.Classes;
+using static Base64.Utility.Classes.Configuration;
 
 namespace Base64
 {
@@ -100,7 +98,7 @@ namespace Base64
             {
 
                 SeperatePermutations = rdStoreSeperate.Checked,
-                IPFilePath = rdInputFile.Checked? @txtFilePath.Text.Trim() : "",
+                IPFilePath = rdInputFile.Checked ? @txtFilePath.Text.Trim() : "",
 
                 IPsection = chckIPService.Checked
             };

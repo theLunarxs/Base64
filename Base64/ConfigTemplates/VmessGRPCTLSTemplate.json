@@ -1,0 +1,51 @@
+{
+    "inbounds": [{
+      "port": "PORTPORT",
+      "listen": "127.0.0.1",
+      "protocol": "socks",
+      "settings": {
+        "auth": "noauth",
+        "udp": false
+      },
+      "tag": "socks-inbound",
+      "sniffing": {
+        "enabled": true,
+        "destOverride": ["http", "tls"]
+      }
+    }],
+    "outbounds": [{
+      "protocol": "vmess",
+      "settings": {
+        "vnext": [{
+          "address": "IP.IP.IP.IP",
+          "port": xxxxx,
+          "users": [{
+            "id": "xxxxx"
+          }]
+        }]
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "allowInsecure": false,
+          "serverName": "xxxxx",
+          "alpn": ["http/1.1"],
+          "fingerprint": "chrome"
+        },
+        "grpcSettings": {
+          "serviceName": "",
+          "multiMode": false
+        }
+      },
+      "tag": "proxy"
+    }],
+    "routing": {
+      "rules": [{
+        "type": "field",
+        "ip": ["geoip:private"],
+        "outboundTag": "block"
+      }]
+    }
+  }
+  

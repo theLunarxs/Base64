@@ -1,10 +1,5 @@
-﻿using Microsoft.VisualBasic.Devices;
-using System;
-using System.IO;
+﻿using Base64.Utility.Classes;
 using System.Net;
-using System.Net.NetworkInformation;
-using System.Reflection.Metadata;
-using System.Windows.Forms.Design;
 
 namespace Base64.Utility.Scanner
 {
@@ -24,7 +19,7 @@ namespace Base64.Utility.Scanner
         private const string _defPath = @$"/IPRanges";
 
         private Dictionary<string, List<string>> _ipRanges;
-        
+
         public enum ListStatus
         {
             Local,
@@ -376,7 +371,7 @@ namespace Base64.Utility.Scanner
 
             try
             {
-                if(append)
+                if (append)
                 {
                     // If "append" is true, append the list of IP addresses to the existing file if it exists.
                     await File.AppendAllLinesAsync(fullPath, IPs);

@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Base64.Utility.Models;
+﻿using Base64.Utility.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace Base64.Utility
+namespace Base64.Utility.Classes
 {
     public class MhSanaeiConfigsContext : DbContext
     {

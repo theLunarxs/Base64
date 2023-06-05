@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Base64.Utility.Inbound;
+﻿using static Base64.Utility.Classes.Inbound;
 
-namespace Base64.Utility
+namespace Base64.Utility.Classes
 {
     public class Configuration
     {
@@ -14,7 +9,7 @@ namespace Base64.Utility
         public TaskConfiguration TaskConfig;
         public Configuration(Server ClientServer, IOConfig Ioconfig, TaskConfiguration TaskConfig)
         {
-            this.IOconfig = Ioconfig;
+            IOconfig = Ioconfig;
             this.ClientServer = ClientServer;
             this.TaskConfig = TaskConfig;
         }

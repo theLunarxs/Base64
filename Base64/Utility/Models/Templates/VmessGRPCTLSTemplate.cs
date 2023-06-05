@@ -1,6 +1,6 @@
 ﻿namespace Base64.Utility.Models.Templates
 {
-    internal class VlessGRPCTLSTemplate
+    internal class VmessGRPCTLSTemplate
     {
         public class Configuration
         {
@@ -13,17 +13,16 @@
         {
             public string Port { get; set; }
             public string Listen { get; set; }
-            public string Tag { get; set; }
             public string Protocol { get; set; }
             public InboundSettings Settings { get; set; }
             public InboundSniffing Sniffing { get; set; }
+            public string Tag { get; set; }
         }
 
         public class InboundSettings
         {
             public string Auth { get; set; }
             public bool Udp { get; set; }
-            public string Ip { get; set; }
         }
 
         public class InboundSniffing
@@ -37,24 +36,24 @@
             public string Protocol { get; set; }
             public OutboundSettings Settings { get; set; }
             public OutboundStreamSettings StreamSettings { get; set; }
+            public string Tag { get; set; }
         }
 
         public class OutboundSettings
         {
-            public List<OutboundServer> Vnext { get; set; }
+            public List<Vnext> Vnext { get; set; }
         }
 
-        public class OutboundServer
+        public class Vnext
         {
             public string Address { get; set; }
             public int Port { get; set; }
-            public List<OutboundUser> Users { get; set; }
+            public List<User> Users { get; set; }
         }
 
-        public class OutboundUser
+        public class User
         {
             public string Id { get; set; }
-            public string Encryption { get; set; }
         }
 
         public class OutboundStreamSettings
@@ -78,6 +77,5 @@
             public string ServiceName { get; set; }
             public bool MultiMode { get; set; }
         }
-
     }
 }

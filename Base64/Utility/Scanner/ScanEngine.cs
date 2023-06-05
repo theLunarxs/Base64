@@ -1,351 +1,164 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
+using static Base64.Utility.Scanner.ClientConfig;
+using static Base64.Utility.Scanner.Configurations;
 
 namespace Base64.Utility.Scanner
 {
     public class ScanEngine
     {
-        public CFIPList ipListLoader;
-        private string[] cfIPRangeList;
-        private CancellationTokenSource cts;
-        public List<ResultItem>? workingIPsFromPrevScan { get; set; }
-        public string v2rayDiagnosingMessage { get; private set; }
-        public bool isV2rayExecutionSuccess { get; private set; }
+        private CancellationTokenSource _cts; // CancellationTokenSource for canceling the scan
+        private readonly short _NumOfProcesses; // Number of parallel processes for scanning
+        private ScanProgressInfo _progressInfo; // Scan progress information
+        private CheckIPConfigurations _checkIPConfigurations; // Configuration settings for IP checking
+        private ClientConfig _clientConfig; // Client configuration settings
+        private bool toCheckSpeed; // Flag indicating whether to check IP speed
+        private const string _ScanResultsPath = "/Results/"; // Path to store scan results
+        private readonly string _folderToScan; // Folder path to scan
+        private List<ResultItem> _scanResults; // List to store scan results
 
-        public int concurrentProcess = 4;
-        public float targetSpeed;
-        public ClientConfig scanConfig;
-        public int downloadTimeout = 2;
-        private Stopwatch curRangeTimer;
-
-        public ScanEngine()
+        public ScanEngine(string FolderPath, ClientConfiguration ClientConfigSettings, CheckIPConfigurations CheckIPSettings)
         {
-            resetProgressInfo();
-            // load cf ip list
-            loadCFIPList();
+            _folderToScan = FolderPath;
+            _scanResults = new(); // Initialize the list of scan results
+            _clientConfig = new(ClientConfigSettings); // Initialize the client configuration
+            _checkIPConfigurations = CheckIPSettings; // Initialize the IP checking configurations
+            toCheckSpeed = CheckIPSettings.toCheckSpeed; // Set the flag to check IP speed
+            _NumOfProcesses = CheckIPSettings.numOfProccess;
         }
 
-        public bool Start(List<string> IPsToScan)
+        public bool Start()
         {
-            parallelScan(IPsToScan);
-            return true;
+            return Scanit(_folderToScan, ParallelScan); // Start the scan
         }
-        // scan in all cloudflare ip range
-        private void scanInCfIPRanges(int startIndex = 0)
+
+        private bool Scanit(string FolderPath, Func<List<string>, List<ResultItem>> Scanner)
         {
-            bool isFirstIterate = true;
-            for (int index = startIndex; index < cfIPRangeList.Length; index++)
+            try
             {
-                string? cfRange = cfIPRangeList[index];
-
-                // don't reset stats if we are resuming, only on first iterate
-                if (!isFirstIterate || !progressInfo.resumeRequested)
+                // Iterate over each file in the specified folder.
+                foreach (var filepath in Directory.GetFiles(FolderPath))
                 {
-                    progressInfo.totalCheckedIPInCurIPRange = 0;
-                    progressInfo.scanResults.totalFoundWorkingIPsCurrentRange = 0;
-                    currentRangeDoneIPs.Clear();
-                }
-
-                isFirstIterate = false;
-
-                if (isValidIPRange(cfRange))
-                {
-                    int origTotal;
-                    List<string> rangeIPs = getCurrentRangeIPs(cfRange, out origTotal);
-                    progressInfo.currentIPRange = cfRange;
-                    progressInfo.currentIPRangeTotalIPs = origTotal;
-                    LogControl.Write(String.Format("Start scanning {0} ip in {1}", rangeIPs.Count, cfRange));
-                    logMessages.Add($"Starting range: {cfRange} ...");
-                    curRangeTimer = Stopwatch.StartNew();
-
-                    // scan
-                    parallelScan(rangeIPs);
-
-                    LogControl.Write(String.Format("End of scanning {0} {1} ip in {2} sec\n\n", cfRange, rangeIPs.Count, curRangeTimer.Elapsed.TotalSeconds));
-
-                    progressInfo.currentIPRangesNumber++;
-
-                    // skip current range?
-                    if (progressInfo.skipCurrentIPRange == true)
+                    // Open the file for reading using a StreamReader.
+                    List<string> content = new HashSet<string>(File.ReadAllLines(filepath)).ToList(); // Read the file content into a list
+                    if (content.Count > 0)
                     {
-                        LogControl.Write(String.Format("IP range skipped by user {0}", cfRange));
-                        progressInfo.skipCurrentIPRange = false;
+                        var result = Scanner(content); // Perform scanning on the content
+                        _ = WriteListToJson(result); // Write the scan results to JSON
                     }
                 }
-            } // for
-
-            progressInfo.currentIPRangesNumber--; // undo last extra +
-        }
-
-        private List<string> getCurrentRangeIPs(string cfRange, out int origTotal)
-        {
-            List<string> allIPs = IPAddressExtensions.getAllIPInRange(cfRange);
-
-            origTotal = allIPs.Count;
-
-            // if scan paused then exclude already done IPs
-            allIPs = excludeDoneIPs(allIPs);
-
-            if (isRandomScan)
-            {
-                Random rnd = new Random();
-                allIPs = allIPs.OrderBy(x => rnd.Next()).ToList();
+                return true; // Scan completed successfully
             }
-
-            return allIPs;
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message); // Handle and propagate any exceptions
+            }
         }
 
-        // for paused scans
-        private List<string> excludeDoneIPs(List<string> allIPs)
+        private List<ResultItem> ParallelScan(List<string> ipRange)
         {
-            return allIPs.Except(currentRangeDoneIPs.ToList()).ToList();
-        }
+            _cts = new CancellationTokenSource(); // Create a CancellationTokenSource for parallel tasks
+            ParallelOptions po = new ParallelOptions()
+            {
+                CancellationToken = _cts.Token, // Set the cancellation token for parallel tasks
+                MaxDegreeOfParallelism = _NumOfProcesses // Set the maximum number of parallel processes
+            };
 
-        public void setCFIPRangeList(string[] list)
-        {
-            this.cfIPRangeList = list;
-        }
-
-        private bool isValidIPRange(string cfIP)
-        {
-            return cfIP != "" && cfIP.Contains('/') && cfIP.Contains('.');
-        }
-
-        private ConcurrentBag<string> currentRangeDoneIPs = new ConcurrentBag<string>();
-
-        private void parallelScan(List<string> ipRange)
-        {
-            cts = new CancellationTokenSource();
-            ParallelOptions po = new ParallelOptions();
-            po.CancellationToken = cts.Token;
-            po.MaxDegreeOfParallelism = concurrentProcess; //System.Environment.ProcessorCount;
             ParallelLoopResult result;
 
             try
             {
-                object locker = new object();
+                object locker = new(); // Object for locking thread-safe operations
                 result = Parallel.ForEach(ipRange, po, (ip, state, index) =>
                 {
                     lock (locker)
                     {
-                        progressInfo.curentWorkingThreads++;
+                        _progressInfo.curentWorkingThreads++; // Increment the count of currently working threads
                     }
-                    var checker = new CheckIPWorking(ip, targetSpeed, scanConfig, downloadTimeout, isDiagnosing);
-                    bool isOK = checker.check();
+
+                    // implement config checker here
+                    _clientConfig.ConvertIP(ip); // Convert IP address in the client configuration
+                    IPChecker checker = new(_clientConfig, _checkIPConfigurations); // Create an IPChecker instance
+
+                    bool IPWorking = checker.CheckIPWorking(toCheckSpeed); // Check if the IP is working
 
                     lock (locker)
                     {
-                        progressInfo.curentWorkingThreads--;
-                        progressInfo.lastCheckedIP = ip;
-                        progressInfo.totalCheckedIPInCurIPRange++;
-                        progressInfo.totalCheckedIP++;
+                        _progressInfo.curentWorkingThreads--; // Decrement the count of currently working threads
+                        _progressInfo.lastCheckedIP = ip; // Update the last checked IP
+                        _progressInfo.totalCheckedIPInCurIPRange++; // Increment the count of total checked IPs in the current IP range
+                        _progressInfo.totalCheckedIP++; // Increment the count of total checked IPs
+                    }
+
+                    if (IPWorking)
+                    {
+                        _scanResults.Add(
+                        new ResultItem()
+                        {
+                            Address = ip,
+                            DownloadSpeed = checker.v2rayProcess.DownloadSpeed,
+                            UploadSpeed = checker.v2rayProcess.UploadSpeed,
+                            Ping = checker.v2rayProcess.Ping
+                        }); // Add the scan result to the list of scan results
                     }
 
                     //Thread.Sleep(1);
-                    LogControl.Write($"{ip.PadRight(15)} is {isOK.ToString().PadRight(5)} front in: {checker.frontingDuration:n0} ms, dl in: {checker.downloadDuration:n0} ms");
 
-                    if (isOK)
-                    {
-                        progressInfo.scanResults.addIPResult(checker.downloadDuration, ip);
-                    }
+                    //if (isOK)
+                    //{
+                    //    _progressInfo.scanResults.addIPResult(checker.downloadDuration, checker.uploadDuration, ip);
+                    //}
 
-                    setDiagnoseMessage(checker);
+                    //// monitoring exceptions rate
+                    //monitorExceptions(checker);
 
-                    // should we auto skip?
-                    checkForAutoSkips();
-
-                    // monitoring exceptions rate
-                    monitorExceptions(checker);
-
-                    currentRangeDoneIPs.Add(ip);
+                    //currentRangeDoneIPs.Add(ip);
 
                     // pause or stop?
-                    if (progressInfo.pauseRequested)
+                    if (_progressInfo.pauseRequested)
                     {
                         // pause and keep state of current scan
-                        state.Break();
+                        state.Break(); // Pause the scan
                     }
-                    else if (progressInfo.skipCurrentIPRange || progressInfo.stopRequested)
+                    else if (_progressInfo.skipCurrentIPRange || _progressInfo.stopRequested)
                     {
                         // stop and go for next range
-                        state.Stop();
+                        state.Stop(); // Stop the scan for the current IP range and move to the next range
                     }
-                }
-                );
+                });
 
+                return _scanResults; // Return the list of scan results
             }
             catch (OperationCanceledException ex)
             {
-                //logMessages.Add("Scan cancel requested.");
+                throw new Exception(ex.Message); // Handle and propagate the cancellation exception
             }
             catch (Exception ex)
             {
-                logMessages.Add($"Unknown Error on Scan Engine: {ex.Message}");
+                throw new Exception($"Unknown Error on Scan Engine: {ex.Message}"); // Handle and propagate any unknown exceptions
             }
             finally
             {
-                cts.Dispose();
-            }
-
-        }
-
-        private void setDiagnoseMessage(CheckIPWorking checker)
-        {
-            if (isDiagnosing)
-            {
-                this.isV2rayExecutionSuccess = checker.isV2rayExecutionSuccess;
-                if (checker.isV2rayExecutionSuccess == false && checker.downloadException != "")
-                {
-                    this.v2rayDiagnosingMessage = checker.downloadException;
-                }
+                _cts.Dispose(); // Dispose the CancellationTokenSource
             }
         }
 
-        private void monitorExceptions(CheckIPWorking checker)
-        {
-            // monitoring exceptions rate
-            if (checker.downloadException != "")
-                progressInfo.downloadExceptions.addError(checker.downloadException);
-            else
-                progressInfo.downloadExceptions.addScuccess();
-
-            if (checker.frontingException != "")
-                progressInfo.frontingExceptions.addError(checker.frontingException);
-            else
-                progressInfo.frontingExceptions.addScuccess();
-        }
-
-        private void checkForAutoSkips()
-        {
-
-            // skip after 3 minute
-            if (skipAfterAWhileEnabled)
-            {
-                if (curRangeTimer.Elapsed.TotalMinutes >= 3)
-                {
-                    if (!progressInfo.skipCurrentIPRange)
-                        logMessages.Add($"Auto skipping {progressInfo.currentIPRange} after 3 minutes of scanning.");
-
-                    skipCurrentIPRange();
-                }
-            }
-
-            // skip after found 5 IPs
-            if (skipAfterFoundIPsEnabled)
-            {
-                if (progressInfo.scanResults.totalFoundWorkingIPsCurrentRange >= 5)
-                {
-                    if (!progressInfo.skipCurrentIPRange)
-                        logMessages.Add($"Auto skipping {progressInfo.currentIPRange} after found 5 working IPs.");
-
-                    skipCurrentIPRange();
-                }
-            }
-
-            // skip after percent done
-            if (skipAfterPercentDone && skipMinPercent > 0)
-            {
-                if (progressInfo.getCurrentRangePercentIsDone() >= skipMinPercent)
-                {
-                    if (!progressInfo.skipCurrentIPRange)
-                        logMessages.Add($"Auto skipping {progressInfo.currentIPRange} after {skipMinPercent}% of range is scanned.");
-
-                    skipCurrentIPRange();
-                }
-            }
-        }
-
-        protected void resetProgressInfo()
-        {
-            progressInfo = new ScanProgressInfo();
-        }
-
-        public List<string> fetchLogMessages()
-        {
-            List<string> curLogMessages = logMessages;
-            logMessages = new();
-            return curLogMessages;
-        }
-
-
-        public bool loadCFIPList(string fileName = "cf.local.iplist")
-        {
-            CFIPList ipList = new CFIPList(fileName);
-            if (ipList.isIPListValid())
-            {
-                cfIPRangeList = ipList.getIPList();
-                ipListLoader = ipList;
-                return true;
-            }
-
-            progressInfo.lastErrMessage = "Invalid cloudflare IP list";
-            progressInfo.hasError = true;
-            return false;
-        }
-
-        internal void stop()
+        private static async Task<bool> WriteListToJson(List<ResultItem> resultList)
         {
             try
             {
-                if (progressInfo.isScanRunning)
-                {
-                    progressInfo.stopRequested = true;
-                    //cts.Cancel();
-                }
+                // Convert the list to JSON
+                string json = JsonSerializer.Serialize(resultList);
+                string filename = $"ScanResults{DateTime.Now.ToLocalTime}"; // Generate a unique filename based on the current timestamp
+                                                                            // Write the JSON string to a file
+                string fullPath = Path.Combine(_ScanResultsPath, filename); // Create the full path for the file
+                await File.WriteAllTextAsync(fullPath, json); // Write the JSON to the file
+                return true; // Writing to JSON completed successfully
             }
-            catch (Exception)
-            { }
-        }
-
-        public void pause()
-        {
-            stop();
-            if (progressInfo.isScanRunning)
+            catch (Exception ex)
             {
-                progressInfo.pauseRequested = true;
+                throw new IOException(ex.Message); // Handle and propagate any exceptions during file writing
             }
-        }
-
-        public void skipCurrentIPRange()
-        {
-            progressInfo.skipCurrentIPRange = true;
-            //cts.Cancel();
-        }
-
-        internal void setSkipAfterFoundIPs(bool enabled)
-        {
-            this.skipAfterFoundIPsEnabled = enabled;
-        }
-
-        internal void setSkipAfterAWhile(bool enabled)
-        {
-            this.skipAfterAWhileEnabled = enabled;
-        }
-
-        internal void setSkipAfterScanPercent(bool enabled, int minPercent)
-        {
-            this.skipAfterPercentDone = enabled;
-            this.skipMinPercent = minPercent;
-        }
-
-        // add just one item
-        internal void setPrevResults(ResultItem resultItem)
-        {
-            var list = new List<ResultItem>();
-            list.Add(resultItem);
-            setPrevResults(list);
-        }
-
-        // add as list of items
-        internal void setPrevResults(List<ResultItem> resultItems)
-        {
-            workingIPsFromPrevScan = resultItems;
         }
     }
+
 }

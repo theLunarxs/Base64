@@ -3,7 +3,8 @@
     public class ResultItem
     {
         public string Address { get; set; }
-        public string ISP { get; set; }
-        public bool Successfull { get; set; }
+        public double DownloadSpeed { get; set; }
+        public double UploadSpeed { get; set; }
+        public int Ping { get; set; }
     }
 }

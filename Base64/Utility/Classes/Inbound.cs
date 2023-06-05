@@ -1,10 +1,8 @@
 ﻿using Base64.Utility.Models;
-using Renci.SshNet.Messages;
-using System.Security.Permissions;
 using System.Text.Json;
 using System.Web;
 
-namespace Base64.Utility
+namespace Base64.Utility.Classes
 {
     public static class Inbound
     {
@@ -205,8 +203,8 @@ namespace Base64.Utility
         public static string ToTrojanLink(this TrojanModel trojan)
         {
             return $"trojan://{trojan.UUID}@{trojan.Address}:{trojan.Port}?security={trojan.security}&sni={trojan.SNI}&" +
-                $"alpn={((trojan.type == "ws") ? UrlEncode(trojan.alpn) : trojan.alpn)}&fp={trojan.fp}&" +
-         $"type={trojan.type}&{((trojan.type == "ws") ? $"host={trojan.host}&path={UrlEncode(trojan.path)}{UrlEncode(trojan.Remark)}" : $"serviceName={trojan.serviceName}&mode={trojan.mode}{UrlEncode(trojan.Remark)}")}";
+                $"alpn={(trojan.type == "ws" ? UrlEncode(trojan.alpn) : trojan.alpn)}&fp={trojan.fp}&" +
+         $"type={trojan.type}&{(trojan.type == "ws" ? $"host={trojan.host}&path={UrlEncode(trojan.path)}{UrlEncode(trojan.Remark)}" : $"serviceName={trojan.serviceName}&mode={trojan.mode}{UrlEncode(trojan.Remark)}")}";
         }
 
         // End Section \\
@@ -241,7 +239,6 @@ namespace Base64.Utility
             {
                 var newInbounds = IPs.Select(ip =>
                 {
-                    // TODO: Optimize this
                     var newInbound = new InboundModel
                     {
                         Id = inbound.Id,

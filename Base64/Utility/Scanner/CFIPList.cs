@@ -154,29 +154,7 @@ namespace Base64.Utility.Scanner
         // work more on this
         // This method takes a folder path and a Scanner delegate as input,
         // and returns an IEnumerable of string objects.
-        private static IEnumerable<string> Scanit(string FolderPath, Action<string> Scanner)
-        {
-            // Iterate over each file in the specified folder.
-            foreach (var filepath in Directory.GetFiles(FolderPath))
-            {
-                // Open the file for reading using a StreamReader.
-                using (StreamReader reader = new StreamReader(filepath))
-                {
-                    // Declare a variable to hold each line of text.
-                    string IP;
 
-                    // Read each line of text in the file until the end is reached.
-                    while ((IP = reader.ReadLine()) != null)
-                    {
-                        // Use the yield keyword to return the line of text as an element in the IEnumerable.
-                        yield return IP;
-
-                        // Call the Scanner delegate, passing the line of text as an argument.
-                        Scanner(IP);
-                    }
-                }
-            }
-        }
 
         // A method that divides a given file into multiple files based on the given number of files
         // This method takes a path to an existing file and the number of new files to create,

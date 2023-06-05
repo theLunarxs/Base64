@@ -13,7 +13,7 @@ namespace Base64.Utility.Scanner
             public int timeoutSec;
             public bool toCheckSpeed;
             public int checkTargetVolume;
-            public int numOfProccess;
+            public short numOfProccess;
         }
         public struct ClientConfiguration
         {

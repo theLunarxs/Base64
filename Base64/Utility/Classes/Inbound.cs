@@ -44,85 +44,11 @@ namespace Base64.Utility.Classes
         }
         #region Encode
         // Encode Section \\
-        //public static string GetIPAddress(InboundModel inbound)
-        //{
-        //    string json = inbound.StreamSettings;
-        //    var jObject = JsonDocument.Parse(json);
-
-        //    // Access the "Host" value inside the "headers" object
-        //    string host = jObject.RootElement
-        //        .GetProperty("wsSettings")
-        //        .GetProperty("headers")
-        //        .GetProperty("Host").GetString()!;
-        //    return host;
-        //}
-
-        //public static string GetSNI(InboundModel inbound)
-        //{
-        //    string json = inbound.StreamSettings;
-        //    var jObject = JsonDocument.Parse(json);
-
-        //    // Access the "serverName" value inside the "tlsSettings" object
-        //    string sni = jObject.RootElement
-        //        .GetProperty("tlsSettings")
-        //        .GetProperty("serverName")
-        //        .GetString()!;
-        //    return sni;
-        //}
-        //public static string GetType(InboundModel inbound)
-        //{
-        //    var json = inbound.StreamSettings;
-        //    var jsonObj = JsonDocument.Parse(json);
-
-        //    var type = jsonObj.RootElement
-        //        .GetProperty("network").GetString()!;
-
-        //    return type;
-        //}
-        //public static string GetTrojanPassword(InboundModel inbound)
-        //{
-        //    var json = inbound.Settings;
-        //    var jObject = JsonDocument.Parse(json);
-
-        //    var TPassword = jObject.RootElement
-        //        .GetProperty("clients")
-        //        .GetProperty("password").GetString()!;
-
-        //    return TPassword;
-        //}
         public static string UrlEncode(string input)
         {
             return HttpUtility.UrlEncode(input);
         }
-        //trojan://eWXHOiACe8@cf.sansorchi.net:2083?security=tls&sni=dns.sahel.live&alpn=http%2F1.1&fp=chrome&type=ws&host=dns
-        //.sahel.live&path=%2Fwss20657%3Fed%3D2048%2F#%40NBA%20Trojan%20ws%20tls
-
-        //public static List<T> GetClients<T>(InboundModel inbound) where T : class
-        //{
-        //    List<T> clients;
-        //    string json = inbound.Settings;
-
-        //    var options = new JsonSerializerOptions
-        //    {
-        //        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        //        WriteIndented = true
-        //    };
-
-        //    try
-        //    {
-        //        var jsonDoc = JsonDocument.Parse(json);
-        //        var clientsArray = jsonDoc.RootElement.GetProperty("clients");
-        //        clients = JsonSerializer.Deserialize<List<T>>(clientsArray.GetRawText(), options)!;
-        //    }
-        //    catch
-        //    {
-        //        return null;
-        //    }
-        //    return inbound.Settings.clients;
-        //    return clients;
-        //}
-
-
+        
         public static List<string> VmessEncoder(InboundModel inbound)
         {
             var Clients = inbound.Settings.clients;

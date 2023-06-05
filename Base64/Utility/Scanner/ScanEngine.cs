@@ -31,7 +31,7 @@ namespace Base64.Utility.Scanner
             return Scanit(_folderToScan, ParallelScan); // Start the scan
         }
 
-        private bool Scanit(string FolderPath, Func<List<string>, List<ResultItem>> Scanner)
+        private static bool Scanit(string FolderPath, Func<List<string>, List<ResultItem>> Scanner)
         {
             try
             {
